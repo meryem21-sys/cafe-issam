@@ -6,6 +6,12 @@
 <title>Café Issam — Bloc M, Oulad Oujih</title>
 <meta name="description" content="Café Issam — cafés, thé à la menthe, boissons et pâtisseries. Commande et retrait au magasin, Bloc M, Oulad Oujih.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23221408'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle' fill='%23B9862F' font-family='Georgia,serif'%3EC%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#221408">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Café Issam">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Lora:ital,wght@0,400;0,600;1,500&family=Tajawal:wght@400;500;700&display=swap');
 
@@ -129,6 +135,7 @@
     margin: 1.1rem auto 1.3rem;
   }
 
+
   header .infos{
     display:flex;
     justify-content:center;
@@ -137,6 +144,34 @@
     font-size: 0.8rem;
     color: var(--brick);
     font-weight: 600;
+  }
+
+  .open-status{
+    display:inline-flex;
+    align-items:center;
+    gap: 0.45rem;
+    margin-top: 0.7rem;
+    font-family:'Lora', serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+
+  .open-status .dot{
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #999;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+  }
+
+  .open-status .dot.open{
+    background: #3f8f4a;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  .open-status .dot.closed{ background: var(--brick); }
+
+  @keyframes pulse-dot{
+    0%, 100%{ box-shadow: 0 0 0 0 rgba(63,143,74,0.4); }
+    50%{ box-shadow: 0 0 0 5px rgba(63,143,74,0); }
   }
 
   /* ---------- hero ---------- */
@@ -233,6 +268,24 @@
     margin-bottom: 2.6rem;
   }
 
+  .section-title{
+    text-align: center;
+    margin-bottom: 2.4rem;
+  }
+
+  .carte-title{
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 5vw, 2.1rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  html[dir="rtl"] .carte-title{ font-family: 'Tajawal', sans-serif; text-transform: none; }
+
+  .section-title .rule{ margin-top: 0.9rem; margin-bottom: 0; }
+
   section{ margin-bottom: 2.6rem; }
 
   .cat-head{ margin-bottom: 1rem; }
@@ -314,6 +367,7 @@
   header h1{ animation-delay: 0.18s; }
   header .rule{ animation-delay: 0.26s; }
   header .infos{ animation-delay: 0.32s; }
+  header .open-status{ animation-delay: 0.38s; }
 
   @keyframes fade-up{
     from{ opacity: 0; transform: translateY(10px); }
@@ -759,6 +813,10 @@
     <div class="infos">
       <span data-fr="9h – 00h tous les jours" data-ar="9 صباحاً – منتصف الليل يومياً">9h – 00h tous les jours</span>
     </div>
+    <div class="open-status" id="openStatus">
+      <span class="dot" id="openDot"></span>
+      <span id="openText"></span>
+    </div>
   </header>
 
   <div class="hero">
@@ -777,6 +835,11 @@
 
     <div class="intro" data-fr="Commande et retrait au magasin · 06 77 10 62 40 ou WhatsApp 06 69 39 35 31." data-ar="الطلب والاستلام من المحل · 06 77 10 62 40 أو واتساب 06 69 39 35 31.">
       Commande et retrait au magasin · 06 77 10 62 40 ou WhatsApp 06 69 39 35 31.
+    </div>
+
+    <div class="section-title">
+      <h2 class="carte-title" data-fr="La Carte" data-ar="القائمة">La Carte</h2>
+      <div class="rule"></div>
     </div>
 
     <section class="reveal">
@@ -844,6 +907,10 @@
     </div>
 
     <div class="social-links">
+      <a href="#" id="installBtn" style="display:none;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
+        <span data-fr="Installer l'app" data-ar="تثبيت التطبيق">Installer l'app</span>
+      </a>
       <a href="#" id="shareBtn">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
         <span data-fr="Partager le menu" data-ar="مشاركة القائمة">Partager le menu</span>
@@ -1132,6 +1199,55 @@
       window.open('https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + url), '_blank');
     }
   });
+
+  /* ---------- statut ouvert / fermé ---------- */
+  var openStrings = {
+    fr: { open: 'Ouvert maintenant', closed: 'Fermé pour le moment' },
+    ar: { open: 'مفتوح الآن', closed: 'مغلق حالياً' }
+  };
+  function updateOpenStatus(){
+    var h = new Date().getHours();
+    var isOpen = h >= 9; // ouvert 9h -> minuit (0h)
+    var dot = document.getElementById('openDot');
+    var text = document.getElementById('openText');
+    dot.classList.toggle('open', isOpen);
+    dot.classList.toggle('closed', !isOpen);
+    text.textContent = isOpen ? openStrings[currentLang].open : openStrings[currentLang].closed;
+  }
+  updateOpenStatus();
+  setInterval(updateOpenStatus, 60000);
+  // ré-applique le bon texte quand la langue change
+  var _setLangOriginal = setLang;
+  setLang = function(lang){ _setLangOriginal(lang); updateOpenStatus(); };
+
+  /* ---------- installer sur l'écran d'accueil ---------- */
+  var deferredPrompt = null;
+  var installBtn = document.getElementById('installBtn');
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'flex';
+  });
+  installBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    if (deferredPrompt){
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(){ deferredPrompt = null; installBtn.style.display = 'none'; });
+    } else {
+      var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      var msg = isIOS
+        ? (currentLang === 'ar' ? 'اضغط على زر المشاركة ثم "إضافة إلى الشاشة الرئيسية"' : 'Appuie sur le bouton Partager puis "Sur l\'écran d\'accueil"')
+        : (currentLang === 'ar' ? 'افتح قائمة المتصفح ثم "إضافة إلى الشاشة الرئيسية"' : 'Ouvre le menu du navigateur puis "Ajouter à l\'écran d\'accueil"');
+      showToast(msg);
+    }
+  });
+  window.addEventListener('appinstalled', function(){
+    installBtn.style.display = 'none';
+  });
+  // iOS ne déclenche jamais beforeinstallprompt : on affiche le bouton quand même
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone){
+    installBtn.style.display = 'flex';
+  }
 
   var observer = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
