@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Café Issam — Bloc M, Oulad Oujih</title>
+<meta name="description" content="Café Issam — cafés, thé à la menthe, boissons et pâtisseries. Commande et retrait au magasin, Bloc M, Oulad Oujih.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23221408'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle' fill='%23B9862F' font-family='Georgia,serif'%3EC%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Lora:ital,wght@0,400;0,600;1,500&family=Tajawal:wght@400;500;700&display=swap');
+
+  :root{
+    --ink: #221408;
+    --cream: #F6EEDF;
+    --paper: #EFE4CE;
+    --saffron: #B9862F;
+    --brick: #7A2E22;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Lora', serif;
+    line-height: 1.55;
+    padding: 14px;
+    padding-bottom: 90px; /* room for sticky bar */
+  }
+
+  html[dir="rtl"] body{ font-family: 'Tajawal', sans-serif; }
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] .item .prix,
+  html[dir="rtl"] header .infos,
+  html[dir="rtl"] footer .orari,
+  html[dir="rtl"] .sticky-bar a{ font-family: 'Tajawal', sans-serif; }
+
+  /* ---------- outer frame (double border, menu-card look) ---------- */
+  .frame{
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--cream);
+    border: 6px double var(--ink);
+    padding: 2.4rem 0 0;
+    overflow: hidden;
+  }
+
+  .corner{
+    position: absolute;
+    width: 74px; height: 74px;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+  .corner.tl{ top: 6px; left: 6px; }
+  .corner.br{ bottom: 6px; right: 6px; transform: rotate(180deg); }
+
+  /* ---------- language switch ---------- */
+  .lang-switch{
+    position: absolute;
+    top: 1rem;
+    right: 1.2rem;
+    display:flex;
+    gap: 0.3rem;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.2rem;
+    z-index: 5;
+  }
+
+  html[dir="rtl"] .lang-switch{ right: auto; left: 1.2rem; }
+
+  .lang-btn{
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    font-family:'Lora', serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .lang-btn.active{
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  /* ---------- header ---------- */
+  header{
+    text-align: center;
+    padding: 0 1.6rem 1.6rem;
+  }
+
+  .eyebrow{
+    display:inline-block;
+    border: 1.5px solid var(--ink);
+    padding: 0.55rem 1.2rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+  }
+
+  .note{
+    font-size: 0.72rem;
+    color: var(--brick);
+    font-style: italic;
+    margin-bottom: 1.1rem;
+  }
+
+  h1{
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: clamp(2.1rem, 8vw, 3rem);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .rule{
+    width: 84px;
+    height: 2px;
+    background: var(--ink);
+    margin: 1.1rem auto 1.3rem;
+  }
+
+  header .infos{
+    display:flex;
+    justify-content:center;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--brick);
+    font-weight: 600;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position: relative;
+    height: 210px;
+    overflow: hidden;
+    margin-top: 1.6rem;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+  }
+
+  .hero img{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.25) sepia(0.15) contrast(1.05);
+    animation: kenburns 16s ease-in-out infinite alternate;
+    transform-origin: center;
+    opacity: 0;
+    transition: opacity 1.4s ease-in-out;
+  }
+
+  .hero img.active{ opacity: 1; }
+
+  @keyframes kenburns{
+    0%   { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.15) translate(-2%, -1.5%); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero img{ animation: none; }
+  }
+
+  .hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: linear-gradient(180deg, rgba(34,20,8,0.05) 0%, rgba(34,20,8,0.35) 100%);
+  }
+
+  .scroll-cue{
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    animation: bob 1.8s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%, 100%{ transform: translateX(-50%) translateY(0); }
+    50%{ transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ---------- main ---------- */
+  main{
+    padding: 2rem 1.6rem 1.6rem;
+  }
+
+  .story{
+    text-align: center;
+    margin-bottom: 1.8rem;
+  }
+
+  .story p{
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ink);
+    max-width: 46ch;
+    margin: 0 auto;
+  }
+
+  html[dir="rtl"] .story p{ font-family: 'Tajawal', sans-serif; font-style: normal; }
+
+  .intro{
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 0.85rem 0;
+    font-size: 0.86rem;
+    text-align: center;
+    color: var(--brick);
+    margin-bottom: 2.6rem;
+  }
+
+  section{ margin-bottom: 2.6rem; }
+
+  .cat-head{ margin-bottom: 1rem; }
+
+  h2{
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+
+  .item{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.55rem 0;
+  }
+
+  .item .nom{
+    font-size: 0.98rem;
+    font-weight: 500;
+  }
+
+  .item .prix{
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    color: var(--brick);
+  }
+
+  /* ---------- scroll reveal ---------- */
+  .reveal{
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.65s cubic-bezier(0.2,0.7,0.2,1), transform 0.65s cubic-bezier(0.2,0.7,0.2,1);
+  }
+  .reveal.in{ opacity: 1; transform: translateY(0); }
+
+  /* ---------- item hover / press feedback ---------- */
+  .item{
+    transition: background 0.25s ease, padding 0.25s ease;
+    border-radius: 3px;
+  }
+  .item:hover{
+    background: rgba(34,20,8,0.045);
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+  }
+
+  /* ---------- sticky bar interaction ---------- */
+  .sticky-bar a{
+    transition: filter 0.2s ease, transform 0.15s ease;
+  }
+  .sticky-bar a:active{
+    transform: scale(0.97);
+    filter: brightness(0.92);
+  }
+
+  .lang-btn{ transition: background 0.2s ease, color 0.2s ease; }
+
+  /* ---------- frame entrance ---------- */
+  .frame{
+    box-shadow: 0 18px 40px rgba(34,20,8,0.14);
+    animation: frame-in 0.7s cubic-bezier(0.2,0.7,0.2,1) both;
+  }
+  @keyframes frame-in{
+    from{ opacity: 0; transform: translateY(14px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  header > *{
+    animation: fade-up 0.6s cubic-bezier(0.2,0.7,0.2,1) both;
+  }
+  header .eyebrow{ animation-delay: 0.05s; }
+  header .note{ animation-delay: 0.12s; }
+  header h1{ animation-delay: 0.18s; }
+  header .rule{ animation-delay: 0.26s; }
+  header .infos{ animation-delay: 0.32s; }
+
+  @keyframes fade-up{
+    from{ opacity: 0; transform: translateY(10px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .frame, header > *{ animation: none; }
+  }
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top: 1.5px solid var(--ink);
+    text-align:center;
+    padding: 1.8rem 1.5rem 2.2rem;
+  }
+
+  footer .orari{
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.3rem;
+  }
+
+  footer .indirizzo{
+    font-size: 0.82rem;
+    color: var(--brick);
+  }
+
+  .social-links{
+    display:flex;
+    justify-content:center;
+    gap: 0.9rem;
+    margin-top: 1.2rem;
+  }
+
+  .social-links a{
+    display:flex;
+    align-items:center;
+    gap: 0.4rem;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    text-decoration: none;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .social-links a:hover{
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  /* ---------- sticky contact bar ---------- */
+  .sticky-bar{
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display:flex;
+    z-index: 20;
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.2);
+  }
+
+  .sticky-bar a{
+    flex: 1;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content:center;
+    gap: 0.25rem;
+    padding: 0.85rem 0.5rem;
+    font-family:'Lora', serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .sticky-bar a .num{
+    font-weight: 500;
+    font-size: 0.72rem;
+    opacity: 0.85;
+  }
+
+  .sticky-bar .call{ background: var(--ink); color: var(--cream); }
+  .sticky-bar .wa{ background: var(--saffron); color: var(--ink); }
+
+  .sticky-bar svg{ width:17px; height:17px; }
+
+  /* ---------- item clickable feedback ---------- */
+  .item.orderable{ cursor: pointer; }
+  .item.orderable:active{ background: rgba(185,134,47,0.16); }
+
+  .item .qty-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--brick);
+    color: var(--cream);
+    font-family:'Lora', serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    margin-inline-start: 0.5rem;
+    transform: scale(0);
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .item .qty-badge.show{ transform: scale(1); }
+
+  /* ---------- floating cart pill ---------- */
+  .cart-pill{
+    position: fixed;
+    left: 50%;
+    bottom: 92px;
+    transform: translate(-50%, 20px);
+    display:flex;
+    align-items:center;
+    gap: 0.7rem;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.7rem 1.1rem;
+    border-radius: 999px;
+    box-shadow: 0 8px 22px rgba(34,20,8,0.35);
+    font-family:'Lora', serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    z-index: 25;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2,0.7,0.2,1);
+  }
+  .cart-pill.show{
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+  }
+  .cart-pill .cart-total{ color: var(--saffron); font-weight: 700; }
+
+  /* ---------- cart modal ---------- */
+  .cart-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(34,20,8,0.55);
+    z-index: 30;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .cart-overlay.show{ opacity: 1; pointer-events: auto; }
+
+  .cart-modal{
+    background: var(--cream);
+    border: 4px double var(--ink);
+    border-bottom: none;
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    padding: 1.4rem 1.3rem 1.6rem;
+    display:flex;
+    flex-direction:column;
+    transform: translateY(20px);
+    transition: transform 0.28s cubic-bezier(0.2,0.7,0.2,1);
+  }
+  .cart-overlay.show .cart-modal{ transform: translateY(0); }
+
+  .cart-modal h3{
+    font-family:'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .cart-list{
+    overflow-y: auto;
+    flex: 1;
+    margin-bottom: 1rem;
+  }
+
+  .cart-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 0.6rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px dashed rgba(34,20,8,0.18);
+  }
+
+  .cart-row .cr-name{ font-size: 0.92rem; }
+  .cart-row .cr-controls{
+    display:flex;
+    align-items:center;
+    gap: 0.5rem;
+  }
+  .cart-row button{
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .cart-row .cr-price{
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    min-width: 52px;
+    text-align: right;
+    color: var(--brick);
+  }
+
+  .cart-empty{
+    text-align:center;
+    padding: 1.5rem 0;
+    color: var(--brick);
+    font-size: 0.9rem;
+  }
+
+  .cart-total-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    border-top: 1.5px solid var(--ink);
+    padding-top: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .cart-actions{
+    display:flex;
+    gap: 0.6rem;
+  }
+
+  .btn-send, .btn-clear, .btn-close{
+    font-family:'Lora', serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-send{ flex: 1; background: var(--saffron); color: var(--ink); }
+  .btn-clear{ background: transparent; border: 1px solid var(--ink); color: var(--ink); }
+  .btn-close{
+    position: absolute;
+    top: 0.9rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.3rem;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  html[dir="rtl"] .btn-close{ right: auto; left: 1rem; }
+
+  .toast{
+    position: fixed;
+    left: 50%;
+    bottom: 92px;
+    transform: translate(-50%, 12px);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    max-width: 90%;
+  }
+  .toast.show{ opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 400px){
+    .sticky-bar a{ font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <svg class="corner tl" viewBox="0 0 100 100">
+    <path d="M8 92 Q8 40 60 15" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+    <path d="M20 30 Q12 20 18 8" fill="none" stroke="var(--ink)" stroke-width="1.2"/>
+    <ellipse cx="26" cy="24" rx="7" ry="3.5" fill="var(--ink)" transform="rotate(-30 26 24)"/>
+    <ellipse cx="38" cy="17" rx="7" ry="3.5" fill="var(--ink)" transform="rotate(-15 38 17)"/>
+    <ellipse cx="52" cy="14" rx="6" ry="3" fill="var(--ink)" transform="rotate(-5 52 14)"/>
+    <ellipse cx="14" cy="50" rx="6" ry="3" fill="var(--ink)" transform="rotate(75 14 50)"/>
+  </svg>
+  <svg class="corner br" viewBox="0 0 100 100">
+    <path d="M8 92 Q8 40 60 15" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+    <path d="M20 30 Q12 20 18 8" fill="none" stroke="var(--ink)" stroke-width="1.2"/>
+    <ellipse cx="26" cy="24" rx="7" ry="3.5" fill="var(--ink)" transform="rotate(-30 26 24)"/>
+    <ellipse cx="38" cy="17" rx="7" ry="3.5" fill="var(--ink)" transform="rotate(-15 38 17)"/>
+    <ellipse cx="52" cy="14" rx="6" ry="3" fill="var(--ink)" transform="rotate(-5 52 14)"/>
+    <ellipse cx="14" cy="50" rx="6" ry="3" fill="var(--ink)" transform="rotate(75 14 50)"/>
+  </svg>
+
+  <header>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="fr">FR</button>
+      <button class="lang-btn" data-lang="ar">عربي</button>
+    </div>
+
+    <div class="eyebrow" data-fr="Le café de quartier" data-ar="قهوة الحي">Le café de quartier</div>
+    <div class="note" data-fr="Oulad Oujih, Bloc M 706, Kénitra" data-ar="أولاد أوجيه، بلوك م 706، القنيطرة">Oulad Oujih, Bloc M 706, Kénitra</div>
+    <h1 data-fr="Café Issam" data-ar="قهوة عصام">Café Issam</h1>
+    <div class="rule"></div>
+    <div class="infos">
+      <span data-fr="9h – 00h tous les jours" data-ar="9 صباحاً – منتصف الليل يومياً">9h – 00h tous les jours</span>
+    </div>
+  </header>
+
+  <div class="hero">
+    <img class="slide active" src="cafe-1.jpg" alt="Grains de café torréfiés" loading="lazy">
+    <img class="slide" src="cafe-3.gif" alt="Extraction de café" loading="lazy">
+    <div class="scroll-cue" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cream)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+
+  <main>
+
+    <div class="story">
+      <p data-fr="« Chez nous, chaque café se prépare comme pour un invité — pas à la chaîne. C'est ce qui fait revenir les gens du quartier, jour après jour. »" data-ar="«عندنا، كل قهوة تُحضّر كأنها لضيف — مو بالجملة. هذا اللي يخلي ناس الحي يرجعوا، يوم بعد يوم.»">« Chez nous, chaque café se prépare comme pour un invité — pas à la chaîne. C'est ce qui fait revenir les gens du quartier, jour après jour. »</p>
+    </div>
+
+    <div class="intro" data-fr="Commande et retrait au magasin · 06 77 10 62 40 ou WhatsApp 06 69 39 35 31." data-ar="الطلب والاستلام من المحل · 06 77 10 62 40 أو واتساب 06 69 39 35 31.">
+      Commande et retrait au magasin · 06 77 10 62 40 ou WhatsApp 06 69 39 35 31.
+    </div>
+
+    <section class="reveal">
+      <div class="cat-head"><h2 data-fr="Cafés" data-ar="قهوة">Cafés</h2></div>
+      <div class="item orderable" data-price="7"><div class="nom" data-fr="Café normal" data-ar="قهوة عادية">Café normal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item orderable" data-price="7"><div class="nom" data-fr="Café léger" data-ar="قهوة خفيفة">Café léger</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item orderable" data-price="9"><div class="nom" data-fr="Café allongé" data-ar="قهوة ألونجي">Café allongé</div><span class="qty-badge"></span><div class="prix" data-fr="9 DH" data-ar="9 درهم">9 DH</div></div>
+      <div class="item orderable" data-price="8"><div class="nom" data-fr="Café au lait" data-ar="قهوة بالحليب">Café au lait</div><span class="qty-badge"></span><div class="prix" data-fr="8 DH" data-ar="8 درهم">8 DH</div></div>
+      <div class="item orderable" data-price="7"><div class="nom" data-fr="Café noir italien" data-ar="قهوة سوداء إيطالية">Café noir italien</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item orderable" data-price="7"><div class="nom" data-fr="Café noir royal" data-ar="قهوة سوداء رويال">Café noir royal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+    </section>
+
+    <section class="reveal">
+      <div class="cat-head"><h2 data-fr="Boissons" data-ar="مشروبات">Boissons</h2></div>
+      <div class="item orderable" data-price="10"><div class="nom" data-fr="Limonade énergie petite" data-ar="ليموناضة طاقة صغيرة">Limonade énergie petite</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
+      <div class="item orderable" data-price="15"><div class="nom" data-fr="Limonade énergie moyenne" data-ar="ليموناضة طاقة متوسطة">Limonade énergie moyenne</div><span class="qty-badge"></span><div class="prix" data-fr="15 DH" data-ar="15 درهم">15 DH</div></div>
+      <div class="item orderable" data-price="10"><div class="nom" data-fr="Coca-Cola" data-ar="كوكا كولا">Coca-Cola</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
+      <div class="item orderable" data-price="10"><div class="nom" data-fr="Sprite" data-ar="سبرايت">Sprite</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
+      <div class="item orderable" data-price="10"><div class="nom" data-fr="Pom's" data-ar="بومز">Pom's</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
+      <div class="item orderable" data-price="10"><div class="nom" data-fr="Hawaï" data-ar="هاواي">Hawaï</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
+      <div class="item orderable" data-price="10"><div class="nom" data-fr="Schweppes" data-ar="شويبس">Schweppes</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
+    </section>
+
+    <section class="reveal">
+      <div class="cat-head"><h2 data-fr="Jus" data-ar="عصير">Jus</h2></div>
+      <div class="item orderable" data-price="10"><div class="nom" data-fr="Jus d'orange" data-ar="عصير البرتقال">Jus d'orange</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
+      <div class="item"><div class="nom" data-fr="Autres jus" data-ar="عصائر أخرى">Autres jus</div><div class="prix" data-fr="sur demande" data-ar="عند الطلب">sur demande</div></div>
+    </section>
+
+    <section class="reveal">
+      <div class="cat-head"><h2 data-fr="Eaux" data-ar="ماء">Eaux</h2></div>
+      <div class="item orderable" data-price="2"><div class="nom" data-fr="Ain Atlas petite" data-ar="عين أطلس صغيرة">Ain Atlas petite</div><span class="qty-badge"></span><div class="prix" data-fr="2 DH" data-ar="2 درهم">2 DH</div></div>
+      <div class="item orderable" data-price="6"><div class="nom" data-fr="Ain Atlas grande" data-ar="عين أطلس كبيرة">Ain Atlas grande</div><span class="qty-badge"></span><div class="prix" data-fr="6 DH" data-ar="6 درهم">6 DH</div></div>
+    </section>
+
+    <section class="reveal">
+      <div class="cat-head"><h2 data-fr="Thé à la menthe" data-ar="أتاي بالنعناع">Thé à la menthe</h2></div>
+      <div class="item orderable" data-price="10"><div class="nom" data-fr="Thé à la menthe" data-ar="أتاي بالنعناع">Thé à la menthe</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
+    </section>
+
+    <section class="reveal">
+      <div class="cat-head"><h2 data-fr="Gâteaux" data-ar="حلويات">Gâteaux</h2></div>
+      <div class="item orderable" data-price="2"><div class="nom" data-fr="Madeleine" data-ar="مادلين">Madeleine</div><span class="qty-badge"></span><div class="prix" data-fr="2 DH" data-ar="2 درهم">2 DH</div></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="orari" data-fr="Ouvert tous les jours · 9h00 – 00h00" data-ar="مفتوح كل يوم · من 9 صباحاً إلى منتصف الليل">Ouvert tous les jours · 9h00 – 00h00</div>
+    <div class="indirizzo" data-fr="Oulad Oujih, Bloc M 706, Kénitra 14000" data-ar="أولاد أوجيه، بلوك م 706، القنيطرة 14000">Oulad Oujih, Bloc M 706, Kénitra 14000</div>
+
+    <div class="social-links">
+      <a href="https://www.tiktok.com/@issamabel59" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16.6 5.82c-1.02-.9-1.6-2.19-1.6-3.52h-3.14v14.24c0 1.6-1.3 2.9-2.9 2.9a2.9 2.9 0 1 1 0-5.8c.27 0 .53.04.78.1V10.4a6.1 6.1 0 0 0-.78-.05A6.06 6.06 0 0 0 3 16.42a6.06 6.06 0 0 0 6.06 6.06 6.06 6.06 0 0 0 6.06-6.06V9.15a9.1 9.1 0 0 0 4.9 1.43V7.44c-1.2 0-2.36-.4-3.32-1.14a5 5 0 0 1-.1-.48z"/></svg>
+        <span data-fr="TikTok" data-ar="تيك توك">TikTok</span>
+      </a>
+      <a href="https://search.google.com/local/writereview?placeid=ChIJxQ5xNidZpw0RNctiSglBX-g" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2 14.5 9.5 22 9.5 16 14.1 18.2 21.6 12 17.3 5.8 21.6 8 14.1 2 9.5 9.5 9.5Z"/></svg>
+        <span data-fr="Laisser un avis" data-ar="اترك تقييماً">Laisser un avis</span>
+      </a>
+    </div>
+  </footer>
+
+</div>
+
+<div class="cart-pill" id="cartPill">
+  <span data-fr="🛒" data-ar="🛒">🛒</span>
+  <span id="cartCount">0</span>
+  <span data-fr="article(s) ·" data-ar="عنصر ·">article(s) ·</span>
+  <span class="cart-total" id="cartPillTotal">0 DH</span>
+</div>
+
+<div class="cart-overlay" id="cartOverlay">
+  <div class="cart-modal">
+    <button class="btn-close" id="cartClose" aria-label="Fermer">×</button>
+    <h3 data-fr="Votre commande" data-ar="طلبك">Votre commande</h3>
+    <div class="cart-list" id="cartList"></div>
+    <div class="cart-total-row">
+      <span data-fr="Total" data-ar="المجموع">Total</span>
+      <span id="cartModalTotal">0 DH</span>
+    </div>
+    <div class="cart-actions">
+      <button class="btn-clear" id="cartClear" data-fr="Vider" data-ar="إفراغ">Vider</button>
+      <button class="btn-send" id="cartSend" data-fr="Envoyer sur WhatsApp" data-ar="إرسال عبر واتساب">Envoyer sur WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="sticky-bar">
+  <a class="call" href="tel:0677106240">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    <span data-fr="Commande & retrait" data-ar="الطلب والاستلام">Commande &amp; retrait</span>
+    <span class="num">06 77 10 62 40</span>
+  </a>
+  <a class="wa" href="https://wa.me/212669393531" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a9 9 0 0 0-7.79 13.44L3 21l3.65-1.24a9 9 0 0 0 4.4 1.14 9 9 0 0 0 6.55-15.58zm-5.55 13.7a7.44 7.44 0 0 1-3.8-1.04l-.27-.16-2.26.77.75-2.2-.18-.28a7.5 7.5 0 1 1 5.76 2.91zm4.1-5.6c-.22-.11-1.32-.65-1.53-.72s-.35-.11-.5.11-.58.72-.71.87-.26.17-.48.06a6.13 6.13 0 0 1-1.8-1.11 6.7 6.7 0 0 1-1.24-1.54c-.13-.22 0-.34.1-.45s.22-.26.33-.39a1.5 1.5 0 0 0 .22-.37.4.4 0 0 0 0-.39c-.06-.11-.5-1.2-.68-1.65s-.36-.37-.5-.38h-.43a.82.82 0 0 0-.6.28 2.5 2.5 0 0 0-.78 1.86 4.35 4.35 0 0 0 .91 2.3 9.95 9.95 0 0 0 3.8 3.36c.53.23.94.36 1.26.47a3 3 0 0 0 1.4.09 2.3 2.3 0 0 0 1.5-1.06 1.87 1.87 0 0 0 .13-1.06c-.06-.1-.2-.16-.42-.27z"/></svg>
+    <span data-fr="Commande & retrait" data-ar="الطلب والاستلام">Commande &amp; retrait</span>
+    <span class="num" data-fr="WhatsApp · 06 69 39 35 31" data-ar="واتساب · 06 69 39 35 31">WhatsApp · 06 69 39 35 31</span>
+  </a>
+</div>
+
+<script>
+  function setLang(lang){
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-fr]').forEach(function(el){
+      el.textContent = el.getAttribute('data-' + lang);
+    });
+    document.querySelectorAll('.lang-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    renderCart();
+  }
+  var currentLang = 'fr';
+  document.querySelectorAll('.lang-btn').forEach(function(b){
+    b.addEventListener('click', function(){ setLang(b.dataset.lang); });
+  });
+
+  /* ---------- panier ---------- */
+  var cart = {}; // { itemIndex: { nameFr, nameAr, price, qty } }
+  var toastTimer = null;
+
+  var strings = {
+    fr: {
+      empty: 'Panier vide — touchez un article du menu pour l\'ajouter.',
+      sent: 'Commande envoyée ! On s\'en occupe 🙌',
+      added: 'ajouté ✓'
+    },
+    ar: {
+      empty: 'السلة فارغة — اضغط على أي عنصر من القائمة لإضافته.',
+      sent: 'تم إرسال الطلب! سنجهزه لك 🙌',
+      added: 'تمت الإضافة ✓'
+    }
+  };
+
+  function showToast(text){
+    var t = document.getElementById('toast');
+    t.textContent = text;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  function cartTotal(){
+    var total = 0;
+    Object.keys(cart).forEach(function(k){ total += cart[k].price * cart[k].qty; });
+    return total;
+  }
+
+  function cartCount(){
+    var count = 0;
+    Object.keys(cart).forEach(function(k){ count += cart[k].qty; });
+    return count;
+  }
+
+  function renderCart(){
+    var count = cartCount();
+    var total = cartTotal();
+    var pill = document.getElementById('cartPill');
+    document.getElementById('cartCount').textContent = count;
+    document.getElementById('cartPillTotal').textContent = total + ' DH';
+    document.getElementById('cartModalTotal').textContent = total + ' DH';
+    pill.classList.toggle('show', count > 0);
+
+    var list = document.getElementById('cartList');
+    list.innerHTML = '';
+    var keys = Object.keys(cart);
+    if (keys.length === 0){
+      var empty = document.createElement('div');
+      empty.className = 'cart-empty';
+      empty.textContent = strings[currentLang].empty;
+      list.appendChild(empty);
+    } else {
+      keys.forEach(function(k){
+        var entry = cart[k];
+        var row = document.createElement('div');
+        row.className = 'cart-row';
+        var name = currentLang === 'ar' ? entry.nameAr : entry.nameFr;
+        row.innerHTML =
+          '<div class="cr-name">' + name + '</div>' +
+          '<div class="cr-controls">' +
+            '<button data-action="dec" data-key="' + k + '">−</button>' +
+            '<span>' + entry.qty + '</span>' +
+            '<button data-action="inc" data-key="' + k + '">+</button>' +
+          '</div>' +
+          '<div class="cr-price">' + (entry.price * entry.qty) + ' DH</div>';
+        list.appendChild(row);
+      });
+    }
+
+    // badges sur le menu
+    document.querySelectorAll('.item.orderable').forEach(function(el, idx){
+      var badge = el.querySelector('.qty-badge');
+      var entry = cart[idx];
+      if (entry && entry.qty > 0){
+        badge.textContent = entry.qty;
+        badge.classList.add('show');
+      } else {
+        badge.classList.remove('show');
+      }
+    });
+  }
+
+  var orderableItems = document.querySelectorAll('.item.orderable');
+  orderableItems.forEach(function(el, idx){
+    el.addEventListener('click', function(){
+      var price = parseFloat(el.dataset.price);
+      var nameFr = el.querySelector('.nom').getAttribute('data-fr');
+      var nameAr = el.querySelector('.nom').getAttribute('data-ar');
+      if (!cart[idx]) cart[idx] = { nameFr: nameFr, nameAr: nameAr, price: price, qty: 0 };
+      cart[idx].qty += 1;
+      renderCart();
+      showToast((currentLang === 'ar' ? nameAr : nameFr) + ' ' + strings[currentLang].added);
+    });
+  });
+
+  document.getElementById('cartList').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    var key = btn.dataset.key;
+    if (btn.dataset.action === 'inc'){ cart[key].qty += 1; }
+    if (btn.dataset.action === 'dec'){
+      cart[key].qty -= 1;
+      if (cart[key].qty <= 0) delete cart[key];
+    }
+    renderCart();
+  });
+
+  var cartOverlay = document.getElementById('cartOverlay');
+  document.getElementById('cartPill').addEventListener('click', function(){
+    cartOverlay.classList.add('show');
+  });
+  document.getElementById('cartClose').addEventListener('click', function(){
+    cartOverlay.classList.remove('show');
+  });
+  cartOverlay.addEventListener('click', function(e){
+    if (e.target === cartOverlay) cartOverlay.classList.remove('show');
+  });
+
+  document.getElementById('cartClear').addEventListener('click', function(){
+    cart = {};
+    renderCart();
+  });
+
+  document.getElementById('cartSend').addEventListener('click', function(){
+    var keys = Object.keys(cart);
+    if (keys.length === 0) return;
+    var lines = ['Nouvelle commande — Café Issam'];
+    keys.forEach(function(k){
+      var entry = cart[k];
+      var name = currentLang === 'ar' ? entry.nameAr : entry.nameFr;
+      lines.push('- ' + name + ' x' + entry.qty + ' — ' + (entry.price * entry.qty) + ' DH');
+    });
+    lines.push('Total: ' + cartTotal() + ' DH');
+    var msg = encodeURIComponent(lines.join('\n'));
+    window.open('https://wa.me/212669393531?text=' + msg, '_blank');
+    showToast(strings[currentLang].sent);
+    cartOverlay.classList.remove('show');
+    cart = {};
+    renderCart();
+  });
+
+  renderCart();
+
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(function(el, i){
+    el.style.transitionDelay = (i % 3) * 0.06 + 's';
+    observer.observe(el);
+  });
+
+  var heroSlides = document.querySelectorAll('.hero .slide');
+  if (heroSlides.length > 1){
+    var current = 0;
+    setInterval(function(){
+      heroSlides[current].classList.remove('active');
+      current = (current + 1) % heroSlides.length;
+      heroSlides[current].classList.add('active');
+    }, 5000);
+  }
+</script>
+
+</body>
+</html>
