@@ -345,7 +345,8 @@
   .social-links{
     display:flex;
     justify-content:center;
-    gap: 0.9rem;
+    flex-wrap: wrap;
+    gap: 0.7rem;
     margin-top: 1.2rem;
   }
 
@@ -598,6 +599,124 @@
   }
   .toast.show{ opacity: 1; transform: translate(-50%, 0); }
 
+  /* ---------- sugar picker ---------- */
+  .sugar-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(34,20,8,0.55);
+    z-index: 35;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    padding: 1rem;
+  }
+  .sugar-overlay.show{ opacity: 1; pointer-events: auto; }
+
+  .sugar-box{
+    background: var(--cream);
+    border: 4px double var(--ink);
+    padding: 1.4rem 1.3rem;
+    width: 100%;
+    max-width: 340px;
+    transform: scale(0.94);
+    transition: transform 0.2s ease;
+  }
+  .sugar-overlay.show .sugar-box{ transform: scale(1); }
+
+  .sugar-box h4{
+    font-family:'Playfair Display', serif;
+    font-size: 1.05rem;
+    margin-bottom: 0.2rem;
+  }
+  .sugar-box .sugar-item-name{
+    font-size: 0.82rem;
+    color: var(--brick);
+    margin-bottom: 1rem;
+  }
+
+  .sugar-options{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .sugar-options button{
+    font-family:'Lora', serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.65rem 0.4rem;
+    border: 1.5px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .sugar-options button:active,
+  .sugar-options button:hover{
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  /* ---------- google map ---------- */
+  .map-embed{
+    margin-top: 1rem;
+    border: 1.5px solid var(--ink);
+    overflow: hidden;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .map-embed iframe{
+    width: 100%;
+    height: 170px;
+    display: block;
+    border: 0;
+    filter: grayscale(0.35) sepia(0.1);
+  }
+
+  /* ---------- avis clients ---------- */
+  .reviews{
+    text-align:center;
+    margin-bottom: 2.4rem;
+  }
+  .reviews .stars{
+    color: var(--saffron);
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+  }
+  .reviews .rating-line{
+    font-size: 0.85rem;
+    color: var(--brick);
+    margin-bottom: 1.1rem;
+  }
+  .review-quotes{
+    display:flex;
+    flex-direction:column;
+    gap: 0.7rem;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+  .review-quotes blockquote{
+    font-family:'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.92rem;
+    border-left: 2px solid var(--saffron);
+    padding-left: 0.8rem;
+    text-align: left;
+  }
+  html[dir="rtl"] .review-quotes blockquote{
+    border-left: none;
+    border-right: 2px solid var(--saffron);
+    padding-left: 0;
+    padding-right: 0.8rem;
+    text-align: right;
+    font-family: 'Tajawal', sans-serif;
+    font-style: normal;
+  }
+
   @media (max-width: 400px){
     .sticky-bar a{ font-size: 0.78rem; }
   }
@@ -659,12 +778,13 @@
 
     <section class="reveal">
       <div class="cat-head"><h2 data-fr="Cafés" data-ar="قهوة">Cafés</h2></div>
-      <div class="item orderable" data-price="7"><div class="nom" data-fr="Café normal" data-ar="قهوة عادية">Café normal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item orderable" data-price="7"><div class="nom" data-fr="Café léger" data-ar="قهوة خفيفة">Café léger</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item orderable" data-price="9"><div class="nom" data-fr="Café allongé" data-ar="قهوة ألونجي">Café allongé</div><span class="qty-badge"></span><div class="prix" data-fr="9 DH" data-ar="9 درهم">9 DH</div></div>
-      <div class="item orderable" data-price="8"><div class="nom" data-fr="Café au lait" data-ar="قهوة بالحليب">Café au lait</div><span class="qty-badge"></span><div class="prix" data-fr="8 DH" data-ar="8 درهم">8 DH</div></div>
-      <div class="item orderable" data-price="7"><div class="nom" data-fr="Café noir italien" data-ar="قهوة سوداء إيطالية">Café noir italien</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item orderable" data-price="7"><div class="nom" data-fr="Café noir royal" data-ar="قهوة سوداء رويال">Café noir royal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar" data-price="7"><div class="nom" data-fr="Café normal" data-ar="قهوة عادية">Café normal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar" data-price="7"><div class="nom" data-fr="Café léger" data-ar="قهوة خفيفة">Café léger</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar" data-price="9"><div class="nom" data-fr="Café allongé" data-ar="قهوة ألونجي">Café allongé</div><span class="qty-badge"></span><div class="prix" data-fr="9 DH" data-ar="9 درهم">9 DH</div></div>
+      <div class="item sugar" data-price="8"><div class="nom" data-fr="Café au lait" data-ar="قهوة بالحليب">Café au lait</div><span class="qty-badge"></span><div class="prix" data-fr="8 DH" data-ar="8 درهم">8 DH</div></div>
+      <div class="item sugar" data-price="7"><div class="nom" data-fr="Café noir italien" data-ar="قهوة سوداء إيطالية">Café noir italien</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar" data-price="7"><div class="nom" data-fr="Café noir royal" data-ar="قهوة سوداء رويال">Café noir royal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar" data-price="7"><div class="nom" data-fr="Lait au chocolat" data-ar="حليب بالشوكولاطة">Lait au chocolat</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
     </section>
 
     <section class="reveal">
@@ -692,7 +812,7 @@
 
     <section class="reveal">
       <div class="cat-head"><h2 data-fr="Thé à la menthe" data-ar="أتاي بالنعناع">Thé à la menthe</h2></div>
-      <div class="item orderable" data-price="10"><div class="nom" data-fr="Thé à la menthe" data-ar="أتاي بالنعناع">Thé à la menthe</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
+      <div class="item sugar" data-price="10"><div class="nom" data-fr="Thé à la menthe" data-ar="أتاي بالنعناع">Thé à la menthe</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
     </section>
 
     <section class="reveal">
@@ -706,7 +826,25 @@
     <div class="orari" data-fr="Ouvert tous les jours · 9h00 – 00h00" data-ar="مفتوح كل يوم · من 9 صباحاً إلى منتصف الليل">Ouvert tous les jours · 9h00 – 00h00</div>
     <div class="indirizzo" data-fr="Oulad Oujih, Bloc M 706, Kénitra 14000" data-ar="أولاد أوجيه، بلوك م 706، القنيطرة 14000">Oulad Oujih, Bloc M 706, Kénitra 14000</div>
 
+    <div class="reviews">
+      <div class="stars">★★★★★</div>
+      <div class="rating-line" data-fr="4,9 / 5 · 8 avis Google" data-ar="4.9 / 5 · 8 تقييمات Google">4,9 / 5 · 8 avis Google</div>
+      <div class="review-quotes">
+        <blockquote data-fr="« Top quality coffee »" data-ar="«Top quality coffee»">« Top quality coffee »</blockquote>
+        <blockquote data-fr="« Top, iksbirions tbarkalh 3andhom café zwina »" data-ar="«Top, iksbirions tbarkalh 3andhom café zwina»">« Top, iksbirions tbarkalh 3andhom café zwina »</blockquote>
+        <blockquote data-fr="« Top cafe »" data-ar="«Top cafe»">« Top cafe »</blockquote>
+      </div>
+    </div>
+
+    <div class="map-embed">
+      <iframe src="https://maps.google.com/maps?q=34.2555987,-6.6272453&z=16&output=embed" loading="lazy" title="Localisation Café Issam"></iframe>
+    </div>
+
     <div class="social-links">
+      <a href="#" id="shareBtn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
+        <span data-fr="Partager le menu" data-ar="مشاركة القائمة">Partager le menu</span>
+      </a>
       <a href="https://www.tiktok.com/@issamabel59" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16.6 5.82c-1.02-.9-1.6-2.19-1.6-3.52h-3.14v14.24c0 1.6-1.3 2.9-2.9 2.9a2.9 2.9 0 1 1 0-5.8c.27 0 .53.04.78.1V10.4a6.1 6.1 0 0 0-.78-.05A6.06 6.06 0 0 0 3 16.42a6.06 6.06 0 0 0 6.06 6.06 6.06 6.06 0 0 0 6.06-6.06V9.15a9.1 9.1 0 0 0 4.9 1.43V7.44c-1.2 0-2.36-.4-3.32-1.14a5 5 0 0 1-.1-.48z"/></svg>
         <span data-fr="TikTok" data-ar="تيك توك">TikTok</span>
@@ -744,6 +882,20 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="sugar-overlay" id="sugarOverlay">
+  <div class="sugar-box">
+    <h4 data-fr="Niveau de sucre" data-ar="مستوى السكر">Niveau de sucre</h4>
+    <div class="sugar-item-name" id="sugarItemName"></div>
+    <div class="sugar-options">
+      <button data-level-fr="Sans sucre" data-level-ar="بدون سكر">Sans sucre</button>
+      <button data-level-fr="Demi sucre" data-level-ar="نص سكر">Demi sucre</button>
+      <button data-level-fr="1 sucre" data-level-ar="سكر واحد">1 sucre</button>
+      <button data-level-fr="2 sucres" data-level-ar="سكرين">2 sucres</button>
+      <button data-level-fr="3 sucres" data-level-ar="3 سكاكر">3 sucres</button>
+    </div>
+  </div>
+</div>
 
 <div class="sticky-bar">
   <a class="call" href="tel:0677106240">
@@ -836,8 +988,9 @@
         var row = document.createElement('div');
         row.className = 'cart-row';
         var name = currentLang === 'ar' ? entry.nameAr : entry.nameFr;
+        var sugarLabel = entry.sugar ? (currentLang === 'ar' ? entry.sugarAr : entry.sugarFr) : '';
         row.innerHTML =
-          '<div class="cr-name">' + name + '</div>' +
+          '<div class="cr-name">' + name + (sugarLabel ? ' <em style="font-style:italic;opacity:0.7;font-size:0.8em;">(' + sugarLabel + ')</em>' : '') + '</div>' +
           '<div class="cr-controls">' +
             '<button data-action="dec" data-key="' + k + '">−</button>' +
             '<span>' + entry.qty + '</span>' +
@@ -848,12 +1001,16 @@
       });
     }
 
-    // badges sur le menu
-    document.querySelectorAll('.item.orderable').forEach(function(el, idx){
+    // badges sur le menu (agrège toutes les variantes sucre d'un même article)
+    document.querySelectorAll('.item[data-idx]').forEach(function(el){
+      var idx = el.dataset.idx;
       var badge = el.querySelector('.qty-badge');
-      var entry = cart[idx];
-      if (entry && entry.qty > 0){
-        badge.textContent = entry.qty;
+      var qty = 0;
+      Object.keys(cart).forEach(function(k){
+        if (String(cart[k].idx) === String(idx)) qty += cart[k].qty;
+      });
+      if (qty > 0){
+        badge.textContent = qty;
         badge.classList.add('show');
       } else {
         badge.classList.remove('show');
@@ -861,17 +1018,55 @@
     });
   }
 
-  var orderableItems = document.querySelectorAll('.item.orderable');
-  orderableItems.forEach(function(el, idx){
+  function addToCart(idx, nameFr, nameAr, price, sugarFr, sugarAr){
+    var key = sugarFr ? (idx + '-' + sugarFr) : String(idx);
+    if (!cart[key]) cart[key] = { idx: idx, nameFr: nameFr, nameAr: nameAr, price: price, qty: 0, sugar: !!sugarFr, sugarFr: sugarFr, sugarAr: sugarAr };
+    cart[key].qty += 1;
+    renderCart();
+    var label = (currentLang === 'ar' ? nameAr : nameFr) + (sugarFr ? ' (' + (currentLang === 'ar' ? sugarAr : sugarFr) + ')' : '');
+    showToast(label + ' ' + strings[currentLang].added);
+  }
+
+  // articles simples (sans choix de sucre)
+  document.querySelectorAll('.item.orderable').forEach(function(el, idx){
+    el.dataset.idx = 'o' + idx;
     el.addEventListener('click', function(){
       var price = parseFloat(el.dataset.price);
       var nameFr = el.querySelector('.nom').getAttribute('data-fr');
       var nameAr = el.querySelector('.nom').getAttribute('data-ar');
-      if (!cart[idx]) cart[idx] = { nameFr: nameFr, nameAr: nameAr, price: price, qty: 0 };
-      cart[idx].qty += 1;
-      renderCart();
-      showToast((currentLang === 'ar' ? nameAr : nameFr) + ' ' + strings[currentLang].added);
+      addToCart(el.dataset.idx, nameFr, nameAr, price, null, null);
     });
+  });
+
+  // articles avec choix de sucre obligatoire
+  var sugarOverlay = document.getElementById('sugarOverlay');
+  var pendingItem = null;
+  document.querySelectorAll('.item.sugar').forEach(function(el, idx){
+    el.dataset.idx = 's' + idx;
+    el.classList.add('orderable');
+    el.addEventListener('click', function(){
+      pendingItem = {
+        idx: el.dataset.idx,
+        price: parseFloat(el.dataset.price),
+        nameFr: el.querySelector('.nom').getAttribute('data-fr'),
+        nameAr: el.querySelector('.nom').getAttribute('data-ar')
+      };
+      document.getElementById('sugarItemName').textContent = currentLang === 'ar' ? pendingItem.nameAr : pendingItem.nameFr;
+      sugarOverlay.classList.add('show');
+    });
+  });
+
+  document.querySelectorAll('.sugar-options button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (!pendingItem) return;
+      addToCart(pendingItem.idx, pendingItem.nameFr, pendingItem.nameAr, pendingItem.price,
+        btn.getAttribute('data-level-fr'), btn.getAttribute('data-level-ar'));
+      sugarOverlay.classList.remove('show');
+      pendingItem = null;
+    });
+  });
+  sugarOverlay.addEventListener('click', function(e){
+    if (e.target === sugarOverlay){ sugarOverlay.classList.remove('show'); pendingItem = null; }
   });
 
   document.getElementById('cartList').addEventListener('click', function(e){
@@ -909,7 +1104,8 @@
     keys.forEach(function(k){
       var entry = cart[k];
       var name = currentLang === 'ar' ? entry.nameAr : entry.nameFr;
-      lines.push('- ' + name + ' x' + entry.qty + ' — ' + (entry.price * entry.qty) + ' DH');
+      var sugarTxt = entry.sugar ? ' (' + (currentLang === 'ar' ? entry.sugarAr : entry.sugarFr) + ')' : '';
+      lines.push('- ' + name + sugarTxt + ' x' + entry.qty + ' — ' + (entry.price * entry.qty) + ' DH');
     });
     lines.push('Total: ' + cartTotal() + ' DH');
     var msg = encodeURIComponent(lines.join('\n'));
@@ -921,6 +1117,18 @@
   });
 
   renderCart();
+
+  /* ---------- partager le menu ---------- */
+  document.getElementById('shareBtn').addEventListener('click', function(e){
+    e.preventDefault();
+    var url = window.location.href;
+    var shareText = 'Le menu de Café Issam 👇';
+    if (navigator.share){
+      navigator.share({ title: 'Café Issam', text: shareText, url: url }).catch(function(){});
+    } else {
+      window.open('https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + url), '_blank');
+    }
+  });
 
   var observer = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
