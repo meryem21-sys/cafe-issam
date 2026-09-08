@@ -163,6 +163,13 @@
 
   .hero img.active{ opacity: 1; }
 
+  .hero img[src$=".gif"]{
+    object-fit: contain;
+    background: var(--ink);
+    animation: none;
+    filter: none;
+  }
+
   @keyframes kenburns{
     0%   { transform: scale(1) translate(0, 0); }
     100% { transform: scale(1.15) translate(-2%, -1.5%); }
