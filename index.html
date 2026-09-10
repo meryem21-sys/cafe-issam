@@ -635,6 +635,127 @@
   }
   html[dir="rtl"] .btn-close{ right: auto; left: 1rem; }
 
+  /* ---------- carte de fidélité ---------- */
+  .loyalty-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 0.4rem;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    text-decoration: none;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: none;
+    cursor: pointer;
+    font-family: 'Lora', serif;
+  }
+  .loyalty-btn:hover{ background: var(--ink); color: var(--cream); }
+
+  .loyalty-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(34,20,8,0.55);
+    z-index: 35;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    padding: 1rem;
+  }
+  .loyalty-overlay.show{ opacity: 1; pointer-events: auto; }
+
+  .loyalty-box{
+    background: var(--cream);
+    border: 4px double var(--ink);
+    padding: 1.6rem 1.4rem;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+  }
+  .loyalty-box h4{
+    font-family:'Playfair Display', serif;
+    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
+  }
+  .loyalty-box .loyalty-sub{
+    font-size: 0.8rem;
+    color: var(--brick);
+    margin-bottom: 1.2rem;
+  }
+  .stamp-grid{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+  .stamp{
+    aspect-ratio: 1;
+    border: 1.5px dashed var(--ink);
+    border-radius: 50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 1.1rem;
+  }
+  .stamp.filled{
+    border-style: solid;
+    background: var(--saffron);
+  }
+  .loyalty-reward{
+    background: rgba(185,134,47,0.15);
+    border: 1.5px solid var(--saffron);
+    padding: 0.8rem;
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.9rem;
+  }
+  .loyalty-reset{
+    font-family:'Lora', serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .loy-input{
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    margin-bottom: 0.6rem;
+    border: 1px solid var(--ink);
+    background: transparent;
+    font-family: 'Lora', serif;
+    font-size: 0.88rem;
+    color: var(--ink);
+    border-radius: 3px;
+  }
+  .loy-input::placeholder{ color: rgba(34,20,8,0.5); }
+
+  .loyalty-qr{
+    display:flex;
+    justify-content:center;
+    margin-bottom: 0.8rem;
+  }
+  .loyalty-qr img, .loyalty-qr canvas{
+    width: 150px; height: 150px;
+    border: 6px solid #fff;
+    box-shadow: 0 2px 10px rgba(34,20,8,0.2);
+  }
+  .loyalty-hint{
+    font-size: 0.76rem;
+    color: var(--brick);
+    margin-bottom: 1rem;
+  }
+
   .toast{
     position: fixed;
     left: 50%;
@@ -844,13 +965,13 @@
 
     <section class="reveal">
       <div class="cat-head"><h2 data-fr="Cafés" data-ar="قهوة">Cafés</h2></div>
-      <div class="item sugar" data-price="7"><div class="nom" data-fr="Café normal" data-ar="قهوة عادية">Café normal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item sugar" data-price="7"><div class="nom" data-fr="Café léger" data-ar="قهوة خفيفة">Café léger</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item sugar" data-price="9"><div class="nom" data-fr="Café allongé" data-ar="قهوة ألونجي">Café allongé</div><span class="qty-badge"></span><div class="prix" data-fr="9 DH" data-ar="9 درهم">9 DH</div></div>
-      <div class="item sugar" data-price="8"><div class="nom" data-fr="Café au lait" data-ar="قهوة بالحليب">Café au lait</div><span class="qty-badge"></span><div class="prix" data-fr="8 DH" data-ar="8 درهم">8 DH</div></div>
-      <div class="item sugar" data-price="7"><div class="nom" data-fr="Café noir italien" data-ar="قهوة سوداء إيطالية">Café noir italien</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item sugar" data-price="7"><div class="nom" data-fr="Café noir royal" data-ar="قهوة سوداء رويال">Café noir royal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item sugar" data-price="7"><div class="nom" data-fr="Lait au chocolat" data-ar="حليب بالشوكولاطة">Lait au chocolat</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar loyalty" data-price="7"><div class="nom" data-fr="Café normal" data-ar="قهوة عادية">Café normal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar loyalty" data-price="7"><div class="nom" data-fr="Café léger" data-ar="قهوة خفيفة">Café léger</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar loyalty" data-price="9"><div class="nom" data-fr="Café allongé" data-ar="قهوة ألونجي">Café allongé</div><span class="qty-badge"></span><div class="prix" data-fr="9 DH" data-ar="9 درهم">9 DH</div></div>
+      <div class="item sugar loyalty" data-price="8"><div class="nom" data-fr="Café au lait" data-ar="قهوة بالحليب">Café au lait</div><span class="qty-badge"></span><div class="prix" data-fr="8 DH" data-ar="8 درهم">8 DH</div></div>
+      <div class="item sugar loyalty" data-price="7"><div class="nom" data-fr="Café noir italien" data-ar="قهوة سوداء إيطالية">Café noir italien</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar loyalty" data-price="7"><div class="nom" data-fr="Café noir royal" data-ar="قهوة سوداء رويال">Café noir royal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
+      <div class="item sugar" data-price="9"><div class="nom" data-fr="Lait au chocolat" data-ar="حليب بالشوكولاطة">Lait au chocolat</div><span class="qty-badge"></span><div class="prix" data-fr="9 DH" data-ar="9 درهم">9 DH</div></div>
     </section>
 
     <section class="reveal">
@@ -907,6 +1028,10 @@
     </div>
 
     <div class="social-links">
+      <button class="loyalty-btn" id="loyaltyBtn">
+        <span>🎟️</span>
+        <span data-fr="Ma carte fidélité" data-ar="بطاقة الولاء">Ma carte fidélité</span>
+      </button>
       <a href="#" id="installBtn" style="display:none;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
         <span data-fr="Installer l'app" data-ar="تثبيت التطبيق">Installer l'app</span>
@@ -953,6 +1078,30 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="loyalty-overlay" id="loyaltyOverlay">
+  <div class="loyalty-box">
+    <h4 data-fr="Carte fidélité" data-ar="بطاقة الولاء">Carte fidélité</h4>
+    <div class="loyalty-sub" data-fr="Le 10ème café est offert" data-ar="القهوة العاشرة مجانية">Le 10ème café est offert</div>
+
+    <div id="loyaltyForm">
+      <input type="text" id="loyPrenom" class="loy-input" data-fr-ph="Prénom" data-ar-ph="الاسم الأول" placeholder="Prénom">
+      <input type="text" id="loyNom" class="loy-input" data-fr-ph="Nom" data-ar-ph="اللقب" placeholder="Nom">
+      <input type="tel" id="loyPhone" class="loy-input" data-fr-ph="Numéro de téléphone" data-ar-ph="رقم الهاتف" placeholder="Numéro de téléphone">
+      <input type="email" id="loyEmail" class="loy-input" data-fr-ph="Email (optionnel)" data-ar-ph="البريد الإلكتروني (اختياري)" placeholder="Email (optionnel)">
+      <button class="loyalty-reset" id="loyaltyRegister" data-fr="Créer ma carte" data-ar="إنشاء بطاقتي" style="width:100%;">Créer ma carte</button>
+    </div>
+
+    <div id="loyaltyCardView" style="display:none;">
+      <div id="loyaltyQr" class="loyalty-qr"></div>
+      <div class="loyalty-hint" data-fr="Montre ce code au comptoir à chaque café" data-ar="أرِ هذا الرمز عند الكاونتر مع كل قهوة">Montre ce code au comptoir à chaque café</div>
+      <div class="stamp-grid" id="stampGrid"></div>
+      <div class="loyalty-reward" id="loyaltyReward" style="display:none;" data-fr="🎉 Café offert ! Montre cet écran au comptoir" data-ar="🎉 قهوة مجانية! أرِ هذه الشاشة عند الكاونتر">🎉 Café offert ! Montre cet écran au comptoir</div>
+    </div>
+
+    <button class="loyalty-reset" id="loyaltyClose" data-fr="Fermer" data-ar="إغلاق">Fermer</button>
+  </div>
+</div>
+
 <div class="sugar-overlay" id="sugarOverlay">
   <div class="sugar-box">
     <h4 data-fr="Niveau de sucre" data-ar="مستوى السكر">Niveau de sucre</h4>
@@ -980,6 +1129,7 @@
   </a>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
   function setLang(lang){
     currentLang = lang;
@@ -987,6 +1137,9 @@
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.querySelectorAll('[data-fr]').forEach(function(el){
       el.textContent = el.getAttribute('data-' + lang);
+    });
+    document.querySelectorAll('[data-fr-ph]').forEach(function(el){
+      el.setAttribute('placeholder', el.getAttribute('data-' + lang + '-ph'));
     });
     document.querySelectorAll('.lang-btn').forEach(function(b){
       b.classList.toggle('active', b.dataset.lang === lang);
@@ -1088,9 +1241,9 @@
     });
   }
 
-  function addToCart(idx, nameFr, nameAr, price, sugarFr, sugarAr){
+  function addToCart(idx, nameFr, nameAr, price, sugarFr, sugarAr, isLoyalty){
     var key = sugarFr ? (idx + '-' + sugarFr) : String(idx);
-    if (!cart[key]) cart[key] = { idx: idx, nameFr: nameFr, nameAr: nameAr, price: price, qty: 0, sugar: !!sugarFr, sugarFr: sugarFr, sugarAr: sugarAr };
+    if (!cart[key]) cart[key] = { idx: idx, nameFr: nameFr, nameAr: nameAr, price: price, qty: 0, sugar: !!sugarFr, sugarFr: sugarFr, sugarAr: sugarAr, loyalty: !!isLoyalty };
     cart[key].qty += 1;
     renderCart();
     var label = (currentLang === 'ar' ? nameAr : nameFr) + (sugarFr ? ' (' + (currentLang === 'ar' ? sugarAr : sugarFr) + ')' : '');
@@ -1104,7 +1257,7 @@
       var price = parseFloat(el.dataset.price);
       var nameFr = el.querySelector('.nom').getAttribute('data-fr');
       var nameAr = el.querySelector('.nom').getAttribute('data-ar');
-      addToCart(el.dataset.idx, nameFr, nameAr, price, null, null);
+      addToCart(el.dataset.idx, nameFr, nameAr, price, null, null, el.classList.contains('loyalty'));
     });
   });
 
@@ -1119,7 +1272,8 @@
         idx: el.dataset.idx,
         price: parseFloat(el.dataset.price),
         nameFr: el.querySelector('.nom').getAttribute('data-fr'),
-        nameAr: el.querySelector('.nom').getAttribute('data-ar')
+        nameAr: el.querySelector('.nom').getAttribute('data-ar'),
+        loyalty: el.classList.contains('loyalty')
       };
       document.getElementById('sugarItemName').textContent = currentLang === 'ar' ? pendingItem.nameAr : pendingItem.nameFr;
       sugarOverlay.classList.add('show');
@@ -1130,7 +1284,7 @@
     btn.addEventListener('click', function(){
       if (!pendingItem) return;
       addToCart(pendingItem.idx, pendingItem.nameFr, pendingItem.nameAr, pendingItem.price,
-        btn.getAttribute('data-level-fr'), btn.getAttribute('data-level-ar'));
+        btn.getAttribute('data-level-fr'), btn.getAttribute('data-level-ar'), pendingItem.loyalty);
       sugarOverlay.classList.remove('show');
       pendingItem = null;
     });
@@ -1181,12 +1335,118 @@
     var msg = encodeURIComponent(lines.join('\n'));
     window.open('https://wa.me/212669393531?text=' + msg, '_blank');
     showToast(strings[currentLang].sent);
+
     cartOverlay.classList.remove('show');
     cart = {};
     renderCart();
   });
 
   renderCart();
+
+  /* ---------- carte de fidélité (connectée) ---------- */
+  var LOYALTY_API = 'https://script.google.com/macros/s/AKfycbxO-xd_VPg0xUPlCZC34UQjcZeMZjubaiLf-7eUtY7N3BQrY0yonFwoLC1uWcvESMnDaQ/exec';
+  var LOYALTY_KEY_SECRET = 'issam-fidelite-2026'; // doit correspondre au SECRET_KEY du script
+  var CLIENT_KEY = 'cafeissam_client'; // { prenom, nom, phone, email }
+  var STAMP_CACHE_KEY = 'cafeissam_stamps_cache';
+
+  function getClient(){
+    try{ return JSON.parse(localStorage.getItem(CLIENT_KEY) || 'null'); }catch(e){ return null; }
+  }
+  function setClient(c){ try{ localStorage.setItem(CLIENT_KEY, JSON.stringify(c)); }catch(e){} }
+  function getStampCache(){ return parseInt(localStorage.getItem(STAMP_CACHE_KEY) || '0', 10) || 0; }
+  function setStampCache(v){ try{ localStorage.setItem(STAMP_CACHE_KEY, String(v)); }catch(e){} }
+
+  function apiConfigured(){ return LOYALTY_API && LOYALTY_API.indexOf('http') === 0; }
+
+  function apiRegister(client){
+    if (!apiConfigured()) return Promise.resolve({ ok: false, offline: true });
+    return fetch(LOYALTY_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'register', key: LOYALTY_KEY_SECRET, phone: client.phone, email: client.email, nom: client.nom, prenom: client.prenom })
+    }).then(function(r){ return r.json(); }).catch(function(){ return { ok: false, offline: true }; });
+  }
+
+  function apiGetStatus(phone){
+    if (!apiConfigured()) return Promise.resolve({ exists: false, offline: true });
+    return fetch(LOYALTY_API + '?action=getStatus&phone=' + encodeURIComponent(phone))
+      .then(function(r){ return r.json(); })
+      .catch(function(){ return { offline: true }; });
+  }
+
+  function drawStampGrid(stamps, reward){
+    var grid = document.getElementById('stampGrid');
+    grid.innerHTML = '';
+    var shown = reward ? 10 : Math.min(stamps, 9);
+    for (var i = 0; i < 10; i++){
+      var d = document.createElement('div');
+      d.className = 'stamp' + (i < shown ? ' filled' : '');
+      d.textContent = i < shown ? '☕' : '';
+      grid.appendChild(d);
+    }
+    document.getElementById('loyaltyReward').style.display = reward ? 'block' : 'none';
+  }
+
+  function showCardView(client, stamps, reward){
+    document.getElementById('loyaltyForm').style.display = 'none';
+    document.getElementById('loyaltyCardView').style.display = 'block';
+    drawStampGrid(stamps, reward);
+    var qrBox = document.getElementById('loyaltyQr');
+    qrBox.innerHTML = '';
+    if (window.QRCode){
+      QRCode.toCanvas(client.phone, { width: 150, margin: 1 }, function(err, canvas){
+        if (!err) qrBox.appendChild(canvas);
+      });
+    }
+  }
+
+  function renderLoyalty(){
+    var client = getClient();
+    if (!client){
+      document.getElementById('loyaltyForm').style.display = 'block';
+      document.getElementById('loyaltyCardView').style.display = 'none';
+      return;
+    }
+    // affiche d'abord la valeur en cache (rapide), puis synchronise
+    showCardView(client, getStampCache(), false);
+    apiGetStatus(client.phone).then(function(res){
+      if (res && !res.offline && typeof res.stamps === 'number'){
+        setStampCache(res.stamps);
+        drawStampGrid(res.stamps, !!res.reward);
+      }
+    });
+  }
+
+  document.getElementById('loyaltyRegister').addEventListener('click', function(){
+    var prenom = document.getElementById('loyPrenom').value.trim();
+    var nom = document.getElementById('loyNom').value.trim();
+    var phone = document.getElementById('loyPhone').value.trim();
+    var email = document.getElementById('loyEmail').value.trim();
+    var digits = phone.replace(/[^0-9]/g, '');
+    if (!prenom || digits.length < 9){
+      showToast(currentLang === 'ar' ? 'يرجى إدخال الاسم ورقم هاتف صحيح' : 'Merci de renseigner ton prénom et un numéro de téléphone valide');
+      return;
+    }
+    var client = { prenom: prenom, nom: nom, phone: digits, email: email };
+    setClient(client);
+    apiRegister(client).then(function(res){
+      var stamps = (res && typeof res.stamps === 'number') ? res.stamps : getStampCache();
+      setStampCache(stamps);
+      showCardView(client, stamps, !!(res && res.reward));
+    });
+  });
+
+  var loyaltyOverlay = document.getElementById('loyaltyOverlay');
+  document.getElementById('loyaltyBtn').addEventListener('click', function(){
+    renderLoyalty();
+    loyaltyOverlay.classList.add('show');
+  });
+  document.getElementById('loyaltyClose').addEventListener('click', function(){
+    loyaltyOverlay.classList.remove('show');
+  });
+  loyaltyOverlay.addEventListener('click', function(e){
+    if (e.target === loyaltyOverlay) loyaltyOverlay.classList.remove('show');
+  });
 
   /* ---------- partager le menu ---------- */
   document.getElementById('shareBtn').addEventListener('click', function(e){
@@ -1276,6 +1536,5 @@
     navigator.serviceWorker.register('sw.js').catch(function(){});
   }
 </script>
-
 </body>
 </html>
