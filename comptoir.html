@@ -134,7 +134,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
-  var PIN = '8435'; // change ce code si tu veux
+  var PIN_HASH = 'd3bc7beb95452a5c752b2b81b9879c31a84c07a27ff571552f7dfefef5995c9a'; // empreinte du code, jamais en clair
+  // Pour changer le code : redemande-moi une nouvelle empreinte pour le nouveau code choisi.
+
+  function sha256(text){
+    var enc = new TextEncoder().encode(text);
+    return crypto.subtle.digest('SHA-256', enc).then(function(buf){
+      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2, '0'); }).join('');
+    });
+  }
   var LOYALTY_API = 'https://script.google.com/macros/s/AKfycbxO-xd_VPg0xUPlCZC34UQjcZeMZjubaiLf-7eUtY7N3BQrY0yonFwoLC1uWcvESMnDaQ/exec';
   var LOYALTY_KEY_SECRET = 'issam-fidelite-2026';
 
@@ -143,14 +151,16 @@
   var scanScreen = document.getElementById('scanScreen');
   function tryPin(){
     var val = document.getElementById('pinInput').value.trim();
-    if (val === PIN){
-      sessionStorage.setItem('comptoir_ok', '1');
-      pinScreen.style.display = 'none';
-      scanScreen.style.display = 'block';
-      startCamera();
-    } else {
-      document.getElementById('pinError').textContent = 'Code incorrect';
-    }
+    sha256(val).then(function(hash){
+      if (hash === PIN_HASH){
+        sessionStorage.setItem('comptoir_ok', '1');
+        pinScreen.style.display = 'none';
+        scanScreen.style.display = 'block';
+        startCamera();
+      } else {
+        document.getElementById('pinError').textContent = 'Code incorrect';
+      }
+    });
   }
   document.getElementById('pinBtn').addEventListener('click', tryPin);
   document.getElementById('pinInput').addEventListener('keydown', function(e){
@@ -215,13 +225,15 @@
     .then(function(r){ return r.json(); })
     .then(function(res){
       if (res && res.ok){
+        var who = (res.prenom ? res.prenom + ' — ' : '') + phone;
+        var badge = res.created ? '🆕 Nouveau client' : '✓ Client existant';
         if (res.reward){
           resultBox.className = 'success';
-          resultBox.innerHTML = '<b>🎉 Café offert disponible</b>' + phone + ' — ' + res.stamps + '/10';
+          resultBox.innerHTML = '<b>🎉 Café offert disponible</b>' + who + '<br>' + res.stamps + ' / 10 tampons';
           showRedeemButton(phone);
         } else {
           resultBox.className = 'success';
-          resultBox.innerHTML = '<b>✓ Tampon ajouté</b>' + phone + ' — ' + res.stamps + '/10';
+          resultBox.innerHTML = '<b>' + badge + '</b>' + who + '<br>' + res.stamps + ' / 10 tampons';
           hideRedeemButton();
         }
       } else {
