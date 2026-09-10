@@ -1138,7 +1138,6 @@
   </a>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
   function setLang(lang){
     currentLang = lang;
@@ -1403,19 +1402,17 @@
     renderQr(client);
   }
 
-  function renderQr(client, attempt){
-    attempt = attempt || 0;
+  function renderQr(client){
     var qrBox = document.getElementById('loyaltyQr');
     qrBox.innerHTML = '';
-    if (window.QRCode){
-      QRCode.toCanvas(client.phone, { width: 150, margin: 1 }, function(err, canvas){
-        if (!err) qrBox.appendChild(canvas);
-      });
-    } else if (attempt < 20){
-      // la librairie QR n'est pas encore chargée, on réessaie brièvement
-      setTimeout(function(){ renderQr(client, attempt + 1); }, 200);
-      return;
-    }
+    var img = document.createElement('img');
+    img.width = 150;
+    img.height = 150;
+    img.alt = 'QR code';
+    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(client.phone);
+    img.onerror = function(){ qrBox.innerHTML = ''; };
+    qrBox.appendChild(img);
+
     var numBox = document.getElementById('loyaltyPhoneDisplay');
     numBox.textContent = client.phone;
   }
