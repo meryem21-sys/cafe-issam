@@ -1435,6 +1435,8 @@
   }
 
   document.getElementById('loyaltyRegister').addEventListener('click', function(){
+    var btn = this;
+    if (btn.disabled) return; // empêche un double-clic d'envoyer deux inscriptions
     var prenom = document.getElementById('loyPrenom').value.trim();
     var nom = document.getElementById('loyNom').value.trim();
     var phone = document.getElementById('loyPhone').value.trim();
@@ -1444,13 +1446,15 @@
       showToast(currentLang === 'ar' ? 'يرجى إدخال الاسم ورقم هاتف صحيح' : 'Merci de renseigner ton prénom et un numéro de téléphone valide');
       return;
     }
+    btn.disabled = true;
     var client = { prenom: prenom, nom: nom, phone: digits, email: email };
     setClient(client);
     apiRegister(client).then(function(res){
       var stamps = (res && typeof res.stamps === 'number') ? res.stamps : getStampCache();
       setStampCache(stamps);
       showCardView(client, stamps, !!(res && res.reward));
-    });
+      btn.disabled = false;
+    }).catch(function(){ btn.disabled = false; });
   });
 
   var loyaltyOverlay = document.getElementById('loyaltyOverlay');
