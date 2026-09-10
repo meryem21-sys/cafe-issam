@@ -750,6 +750,14 @@
     border: 6px solid #fff;
     box-shadow: 0 2px 10px rgba(34,20,8,0.2);
   }
+  .loyalty-phone-display{
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.5rem;
+  }
+
   .loyalty-hint{
     font-size: 0.76rem;
     color: var(--brick);
@@ -1093,6 +1101,7 @@
 
     <div id="loyaltyCardView" style="display:none;">
       <div id="loyaltyQr" class="loyalty-qr"></div>
+      <div class="loyalty-phone-display" id="loyaltyPhoneDisplay"></div>
       <div class="loyalty-hint" data-fr="Montre ce code au comptoir à chaque café" data-ar="أرِ هذا الرمز عند الكاونتر مع كل قهوة">Montre ce code au comptoir à chaque café</div>
       <div class="stamp-grid" id="stampGrid"></div>
       <div class="loyalty-reward" id="loyaltyReward" style="display:none;" data-fr="🎉 Café offert ! Montre cet écran au comptoir" data-ar="🎉 قهوة مجانية! أرِ هذه الشاشة عند الكاونتر">🎉 Café offert ! Montre cet écran au comptoir</div>
@@ -1391,13 +1400,24 @@
     document.getElementById('loyaltyForm').style.display = 'none';
     document.getElementById('loyaltyCardView').style.display = 'block';
     drawStampGrid(stamps, reward);
+    renderQr(client);
+  }
+
+  function renderQr(client, attempt){
+    attempt = attempt || 0;
     var qrBox = document.getElementById('loyaltyQr');
     qrBox.innerHTML = '';
     if (window.QRCode){
       QRCode.toCanvas(client.phone, { width: 150, margin: 1 }, function(err, canvas){
         if (!err) qrBox.appendChild(canvas);
       });
+    } else if (attempt < 20){
+      // la librairie QR n'est pas encore chargée, on réessaie brièvement
+      setTimeout(function(){ renderQr(client, attempt + 1); }, 200);
+      return;
     }
+    var numBox = document.getElementById('loyaltyPhoneDisplay');
+    numBox.textContent = client.phone;
   }
 
   function renderLoyalty(){
