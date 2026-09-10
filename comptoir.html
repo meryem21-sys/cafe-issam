@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comptoir — Café Issam</title>
+<style>
+  :root{
+    --ink: #221408;
+    --cream: #F6EEDF;
+    --saffron: #B9862F;
+    --brick: #7A2E22;
+    --green: #3f8f4a;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background: var(--ink);
+    color: var(--cream);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 1.2rem;
+  }
+
+  h1{ font-size: 1.3rem; margin-bottom: 1.5rem; text-align:center; }
+
+  /* --- écran PIN --- */
+  #pinScreen{ text-align:center; width:100%; max-width:300px; }
+  #pinInput{
+    width: 100%;
+    font-size: 1.6rem;
+    letter-spacing: 0.5rem;
+    text-align:center;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 1rem;
+  }
+  #pinBtn{
+    width:100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    background: var(--saffron);
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor:pointer;
+  }
+  #pinError{ color: #e88; font-size: 0.85rem; margin-top: 0.7rem; min-height: 1.2em; }
+
+  /* --- écran scanner --- */
+  #scanScreen{ display:none; width:100%; max-width:420px; text-align:center; }
+  #video{
+    width: 100%;
+    border-radius: 12px;
+    border: 3px solid var(--saffron);
+    margin-bottom: 1.2rem;
+    background: #000;
+  }
+  #canvas{ display:none; }
+
+  #result{
+    min-height: 90px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  #result.idle{ background: rgba(255,255,255,0.06); color: rgba(246,238,223,0.6); }
+  #result.success{ background: rgba(63,143,74,0.2); border: 1.5px solid var(--green); }
+  #result.error{ background: rgba(122,46,34,0.3); border: 1.5px solid var(--brick); }
+  #result b{ font-size: 1.3rem; display:block; margin-bottom: 0.3rem; }
+
+  #manualBtn{
+    background: none;
+    border: 1px solid rgba(246,238,223,0.4);
+    color: var(--cream);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  #manualForm{ display:none; margin-top: 1rem; width:100%; }
+  #manualEmail, #manualPhone{
+    width:100%;
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+  }
+  #manualAdd{
+    width:100%;
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: none;
+    background: var(--saffron);
+    color: var(--ink);
+    font-weight:700;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="pinScreen">
+  <h1>☕ Espace comptoir — Café Issam</h1>
+  <input type="password" id="pinInput" inputmode="numeric" maxlength="4" placeholder="Code à 4 chiffres">
+  <button id="pinBtn">Entrer</button>
+  <div id="pinError"></div>
+</div>
+
+<div id="scanScreen">
+  <h1>Scanner la carte du client</h1>
+  <video id="video" playsinline></video>
+  <canvas id="canvas"></canvas>
+  <div id="result" class="idle">En attente d'un QR code…</div>
+  <button id="manualBtn">Ajouter manuellement par téléphone</button>
+  <div id="manualForm">
+    <input type="tel" id="manualPhone" placeholder="Numéro de téléphone du client">
+    <button id="manualAdd">+1 café</button>
+  </div>
+  <button id="redeemBtn" style="display:none; margin-top:1rem; width:100%; padding:0.8rem; border-radius:8px; border:none; background:var(--green); color:#fff; font-weight:700; cursor:pointer;">✓ Confirmer la remise du café offert</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+  var PIN = '8435'; // change ce code si tu veux
+  var LOYALTY_API = 'https://script.google.com/macros/s/AKfycbxO-xd_VPg0xUPlCZC34UQjcZeMZjubaiLf-7eUtY7N3BQrY0yonFwoLC1uWcvESMnDaQ/exec';
+  var LOYALTY_KEY_SECRET = 'issam-fidelite-2026';
+
+  // --- PIN ---
+  var pinScreen = document.getElementById('pinScreen');
+  var scanScreen = document.getElementById('scanScreen');
+  function tryPin(){
+    var val = document.getElementById('pinInput').value.trim();
+    if (val === PIN){
+      sessionStorage.setItem('comptoir_ok', '1');
+      pinScreen.style.display = 'none';
+      scanScreen.style.display = 'block';
+      startCamera();
+    } else {
+      document.getElementById('pinError').textContent = 'Code incorrect';
+    }
+  }
+  document.getElementById('pinBtn').addEventListener('click', tryPin);
+  document.getElementById('pinInput').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') tryPin();
+  });
+  if (sessionStorage.getItem('comptoir_ok') === '1'){
+    pinScreen.style.display = 'none';
+    scanScreen.style.display = 'block';
+  }
+
+  // --- scanner ---
+  var video = document.getElementById('video');
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var resultBox = document.getElementById('result');
+  var scanning = true;
+  var lastScan = 0;
+
+  function startCamera(){
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(function(stream){
+        video.srcObject = stream;
+        video.setAttribute('playsinline', true);
+        video.play();
+        requestAnimationFrame(tick);
+      })
+      .catch(function(){
+        resultBox.className = 'error';
+        resultBox.innerHTML = '<b>Caméra inaccessible</b>Autorise la caméra ou utilise l\'ajout manuel ci-dessous.';
+      });
+  }
+
+  function tick(){
+    if (video.readyState === video.HAVE_ENOUGH_DATA && scanning){
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var code = jsQR(imageData.data, imageData.width, imageData.height);
+      if (code && code.data && Date.now() - lastScan > 2500){
+        lastScan = Date.now();
+        handleScan(code.data);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function handleScan(data){
+    var digits = data.replace(/[^0-9]/g, '');
+    if (digits.length < 9) return; // pas un numéro valide, ignore
+    addStampFor(digits);
+  }
+
+  function addStampFor(phone){
+    resultBox.className = 'idle';
+    resultBox.innerHTML = 'Ajout en cours…';
+    fetch(LOYALTY_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'addStamp', key: LOYALTY_KEY_SECRET, phone: phone, count: 1 })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res && res.ok){
+        if (res.reward){
+          resultBox.className = 'success';
+          resultBox.innerHTML = '<b>🎉 Café offert disponible</b>' + phone + ' — ' + res.stamps + '/10';
+          showRedeemButton(phone);
+        } else {
+          resultBox.className = 'success';
+          resultBox.innerHTML = '<b>✓ Tampon ajouté</b>' + phone + ' — ' + res.stamps + '/10';
+          hideRedeemButton();
+        }
+      } else {
+        resultBox.className = 'error';
+        resultBox.innerHTML = '<b>Erreur</b>Réessaie ou vérifie la connexion.';
+      }
+    })
+    .catch(function(){
+      resultBox.className = 'error';
+      resultBox.innerHTML = '<b>Hors ligne</b>Vérifie la connexion internet.';
+    });
+  }
+
+  var currentRewardPhone = null;
+  function showRedeemButton(phone){
+    currentRewardPhone = phone;
+    document.getElementById('redeemBtn').style.display = 'block';
+  }
+  function hideRedeemButton(){
+    currentRewardPhone = null;
+    document.getElementById('redeemBtn').style.display = 'none';
+  }
+  document.getElementById('redeemBtn').addEventListener('click', function(){
+    if (!currentRewardPhone) return;
+    fetch(LOYALTY_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'redeemReward', key: LOYALTY_KEY_SECRET, phone: currentRewardPhone })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res && res.ok){
+        resultBox.className = 'success';
+        resultBox.innerHTML = '<b>✓ Café offert remis</b>Carte remise à ' + res.stamps + '/10';
+      }
+      hideRedeemButton();
+    })
+    .catch(function(){
+      resultBox.className = 'error';
+      resultBox.innerHTML = '<b>Hors ligne</b>Vérifie la connexion internet.';
+    });
+  });
+
+  // --- ajout manuel ---
+  document.getElementById('manualBtn').addEventListener('click', function(){
+    var form = document.getElementById('manualForm');
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+  });
+  document.getElementById('manualAdd').addEventListener('click', function(){
+    var phone = document.getElementById('manualPhone').value.replace(/[^0-9]/g, '');
+    if (phone.length < 9){
+      resultBox.className = 'error';
+      resultBox.innerHTML = '<b>Numéro invalide</b>';
+      return;
+    }
+    addStampFor(phone);
+    document.getElementById('manualPhone').value = '';
+  });
+</script>
+
+</body>
+</html>
