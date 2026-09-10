@@ -3,1559 +3,296 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Café Issam — Bloc M, Oulad Oujih</title>
-<meta name="description" content="Café Issam — cafés, thé à la menthe, boissons et pâtisseries. Commande et retrait au magasin, Bloc M, Oulad Oujih.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23221408'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle' fill='%23B9862F' font-family='Georgia,serif'%3EC%3C/text%3E%3C/svg%3E">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#221408">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Café Issam">
+<title>Comptoir — Café Issam</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Lora:ital,wght@0,400;0,600;1,500&family=Tajawal:wght@400;500;700&display=swap');
-
   :root{
     --ink: #221408;
     --cream: #F6EEDF;
-    --paper: #EFE4CE;
     --saffron: #B9862F;
     --brick: #7A2E22;
+    --green: #3f8f4a;
   }
-
   *{ box-sizing:border-box; margin:0; padding:0; }
-
-  html{ scroll-behavior:smooth; }
-
   body{
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Lora', serif;
-    line-height: 1.55;
-    padding: 14px;
-    padding-bottom: 90px; /* room for sticky bar */
-  }
-
-  html[dir="rtl"] body{ font-family: 'Tajawal', sans-serif; }
-  html[dir="rtl"] h1,
-  html[dir="rtl"] h2,
-  html[dir="rtl"] .item .prix,
-  html[dir="rtl"] header .infos,
-  html[dir="rtl"] footer .orari,
-  html[dir="rtl"] .sticky-bar a{ font-family: 'Tajawal', sans-serif; }
-
-  /* ---------- outer frame (double border, menu-card look) ---------- */
-  .frame{
-    position: relative;
-    max-width: 720px;
-    margin: 0 auto;
-    background: var(--cream);
-    border: 6px double var(--ink);
-    padding: 2.4rem 0 0;
-    overflow: hidden;
-  }
-
-  .corner{
-    position: absolute;
-    width: 74px; height: 74px;
-    opacity: 0.85;
-    pointer-events: none;
-  }
-  .corner.tl{ top: 6px; left: 6px; }
-  .corner.br{ bottom: 6px; right: 6px; transform: rotate(180deg); }
-
-  /* ---------- language switch ---------- */
-  .lang-switch{
-    display:flex;
-    justify-content: flex-end;
-    gap: 0.3rem;
-    margin-bottom: 1.2rem;
-  }
-
-  .lang-switch-inner{
-    display:flex;
-    gap: 0.3rem;
-    border: 1px solid var(--ink);
-    border-radius: 999px;
-    padding: 0.2rem;
-  }
-
-  .lang-btn{
-    border: none;
-    background: transparent;
-    color: var(--ink);
-    font-family:'Lora', serif;
-    font-weight: 600;
-    font-size: 0.7rem;
-    padding: 0.3rem 0.65rem;
-    border-radius: 999px;
-    cursor: pointer;
-  }
-
-  .lang-btn.active{
     background: var(--ink);
     color: var(--cream);
-  }
-
-  /* ---------- header ---------- */
-  header{
-    text-align: center;
-    padding: 0 1.6rem 1.6rem;
-  }
-
-  .eyebrow{
-    display:inline-block;
-    border: 1.5px solid var(--ink);
-    padding: 0.55rem 1.2rem;
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    font-weight: 600;
-    margin-bottom: 0.9rem;
-  }
-
-  .note{
-    font-size: 0.72rem;
-    color: var(--brick);
-    font-style: italic;
-    margin-bottom: 1.1rem;
-  }
-
-  h1{
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: clamp(2.1rem, 8vw, 3rem);
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-
-  .rule{
-    width: 84px;
-    height: 2px;
-    background: var(--ink);
-    margin: 1.1rem auto 1.3rem;
-  }
-
-
-  header .infos{
-    display:flex;
-    justify-content:center;
-    gap: 1.4rem;
-    flex-wrap: wrap;
-    font-size: 0.8rem;
-    color: var(--brick);
-    font-weight: 600;
-  }
-
-  .open-status{
-    display:inline-flex;
-    align-items:center;
-    gap: 0.45rem;
-    margin-top: 0.7rem;
-    font-family:'Lora', serif;
-    font-weight: 600;
-    font-size: 0.78rem;
-  }
-
-  .open-status .dot{
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: #999;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
-  }
-
-  .open-status .dot.open{
-    background: #3f8f4a;
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-  .open-status .dot.closed{ background: var(--brick); }
-
-  @keyframes pulse-dot{
-    0%, 100%{ box-shadow: 0 0 0 0 rgba(63,143,74,0.4); }
-    50%{ box-shadow: 0 0 0 5px rgba(63,143,74,0); }
-  }
-
-  /* ---------- hero ---------- */
-  .hero{
-    position: relative;
-    height: 210px;
-    overflow: hidden;
-    margin-top: 1.6rem;
-    border-top: 1.5px solid var(--ink);
-    border-bottom: 1.5px solid var(--ink);
-  }
-
-  .hero img{
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: grayscale(0.25) sepia(0.15) contrast(1.05);
-    animation: kenburns 16s ease-in-out infinite alternate;
-    transform-origin: center;
-    opacity: 0;
-    transition: opacity 1.4s ease-in-out;
-  }
-
-  .hero img.active{ opacity: 1; }
-
-  .hero img[src$=".gif"]{
-    object-fit: cover;
-    object-position: center 30%;
-    animation: none;
-    filter: none;
-  }
-
-  @keyframes kenburns{
-    0%   { transform: scale(1) translate(0, 0); }
-    100% { transform: scale(1.15) translate(-2%, -1.5%); }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .hero img{ animation: none; }
-  }
-
-  .hero::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background: linear-gradient(180deg, rgba(34,20,8,0.05) 0%, rgba(34,20,8,0.35) 100%);
-  }
-
-  .scroll-cue{
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-    animation: bob 1.8s ease-in-out infinite;
-  }
-  @keyframes bob{
-    0%, 100%{ transform: translateX(-50%) translateY(0); }
-    50%{ transform: translateX(-50%) translateY(6px); }
-  }
-
-  /* ---------- main ---------- */
-  main{
-    padding: 2rem 1.6rem 1.6rem;
-  }
-
-  .story{
-    text-align: center;
-    margin-bottom: 1.8rem;
-  }
-
-  .story p{
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-weight: 500;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: var(--ink);
-    max-width: 46ch;
-    margin: 0 auto;
-  }
-
-  html[dir="rtl"] .story p{ font-family: 'Tajawal', sans-serif; font-style: normal; }
-
-  .intro{
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px solid var(--ink);
-    padding: 0.85rem 0;
-    font-size: 0.86rem;
-    text-align: center;
-    color: var(--brick);
-    margin-bottom: 2.6rem;
-  }
-
-  .section-title{
-    text-align: center;
-    margin-bottom: 2.4rem;
-  }
-
-  .carte-title{
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: clamp(1.6rem, 5vw, 2.1rem);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--ink);
-  }
-
-  html[dir="rtl"] .carte-title{ font-family: 'Tajawal', sans-serif; text-transform: none; }
-
-  .section-title .rule{ margin-top: 0.9rem; margin-bottom: 0; }
-
-  section{ margin-bottom: 2.6rem; }
-
-  .cat-head{ margin-bottom: 1rem; }
-
-  h2{
-    font-family:'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 1.25rem;
-    letter-spacing: 0.02em;
-    color: var(--ink);
-  }
-
-  .item{
-    display:flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
-    padding: 0.55rem 0;
-  }
-
-  .item .nom{
-    font-size: 0.98rem;
-    font-weight: 500;
-  }
-
-  .item .prix{
-    font-family:'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 0.92rem;
-    white-space: nowrap;
-    color: var(--brick);
-  }
-
-  /* ---------- scroll reveal ---------- */
-  .reveal{
-    opacity: 0;
-    transform: translateY(18px);
-    transition: opacity 0.65s cubic-bezier(0.2,0.7,0.2,1), transform 0.65s cubic-bezier(0.2,0.7,0.2,1);
-  }
-  .reveal.in{ opacity: 1; transform: translateY(0); }
-
-  /* ---------- item hover / press feedback ---------- */
-  .item{
-    transition: background 0.25s ease, padding 0.25s ease;
-    border-radius: 3px;
-  }
-  .item:hover{
-    background: rgba(34,20,8,0.045);
-    padding-left: 0.4rem;
-    padding-right: 0.4rem;
-  }
-
-  /* ---------- sticky bar interaction ---------- */
-  .sticky-bar a{
-    transition: filter 0.2s ease, transform 0.15s ease;
-  }
-  .sticky-bar a:active{
-    transform: scale(0.97);
-    filter: brightness(0.92);
-  }
-
-  .lang-btn{ transition: background 0.2s ease, color 0.2s ease; }
-
-  /* ---------- frame entrance ---------- */
-  .frame{
-    box-shadow: 0 18px 40px rgba(34,20,8,0.14);
-    animation: frame-in 0.7s cubic-bezier(0.2,0.7,0.2,1) both;
-  }
-  @keyframes frame-in{
-    from{ opacity: 0; transform: translateY(14px); }
-    to{ opacity: 1; transform: translateY(0); }
-  }
-
-  header > *{
-    animation: fade-up 0.6s cubic-bezier(0.2,0.7,0.2,1) both;
-  }
-  header .eyebrow{ animation-delay: 0.05s; }
-  header .note{ animation-delay: 0.12s; }
-  header h1{ animation-delay: 0.18s; }
-  header .rule{ animation-delay: 0.26s; }
-  header .infos{ animation-delay: 0.32s; }
-  header .open-status{ animation-delay: 0.38s; }
-
-  @keyframes fade-up{
-    from{ opacity: 0; transform: translateY(10px); }
-    to{ opacity: 1; transform: translateY(0); }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .frame, header > *{ animation: none; }
-  }
-
-  /* ---------- footer ---------- */
-  footer{
-    border-top: 1.5px solid var(--ink);
-    text-align:center;
-    padding: 1.8rem 1.5rem 2.2rem;
-  }
-
-  footer .orari{
-    font-family:'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 1.05rem;
-    margin-bottom: 0.3rem;
-  }
-
-  footer .indirizzo{
-    font-size: 0.82rem;
-    color: var(--brick);
-  }
-
-  .social-links{
-    display:flex;
-    justify-content:center;
-    flex-wrap: wrap;
-    gap: 0.7rem;
-    margin-top: 1.2rem;
-  }
-
-  .social-links a{
-    display:flex;
-    align-items:center;
-    gap: 0.4rem;
-    border: 1px solid var(--ink);
-    color: var(--ink);
-    text-decoration: none;
-    padding: 0.5rem 0.9rem;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    transition: background 0.2s ease, color 0.2s ease;
-  }
-
-  .social-links a:hover{
-    background: var(--ink);
-    color: var(--cream);
-  }
-
-  /* ---------- sticky contact bar ---------- */
-  .sticky-bar{
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    display:flex;
-    z-index: 20;
-    box-shadow: 0 -4px 14px rgba(0,0,0,0.2);
-  }
-
-  .sticky-bar a{
-    flex: 1;
-    display:flex;
-    flex-direction: column;
-    align-items:center;
-    justify-content:center;
-    gap: 0.25rem;
-    padding: 0.85rem 0.5rem;
-    font-family:'Lora', serif;
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-decoration: none;
-    text-align: center;
-  }
-
-  .sticky-bar a .num{
-    font-weight: 500;
-    font-size: 0.72rem;
-    opacity: 0.85;
-  }
-
-  .sticky-bar .call{ background: var(--ink); color: var(--cream); }
-  .sticky-bar .wa{ background: var(--saffron); color: var(--ink); }
-
-  .sticky-bar svg{ width:17px; height:17px; }
-
-  /* ---------- item clickable feedback ---------- */
-  .item.orderable{ cursor: pointer; }
-  .item.orderable:active{ background: rgba(185,134,47,0.16); }
-
-  .item .qty-badge{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 5px;
-    border-radius: 999px;
-    background: var(--brick);
-    color: var(--cream);
-    font-family:'Lora', serif;
-    font-weight: 700;
-    font-size: 0.72rem;
-    margin-inline-start: 0.5rem;
-    transform: scale(0);
-    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  .item .qty-badge.show{ transform: scale(1); }
-
-  /* ---------- floating cart pill ---------- */
-  .cart-pill{
-    position: fixed;
-    left: 50%;
-    bottom: 92px;
-    transform: translate(-50%, 20px);
-    display:flex;
-    align-items:center;
-    gap: 0.7rem;
-    background: var(--ink);
-    color: var(--cream);
-    padding: 0.7rem 1.1rem;
-    border-radius: 999px;
-    box-shadow: 0 8px 22px rgba(34,20,8,0.35);
-    font-family:'Lora', serif;
-    font-weight: 600;
-    font-size: 0.85rem;
-    z-index: 25;
-    cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2,0.7,0.2,1);
-  }
-  .cart-pill.show{
-    opacity: 1;
-    pointer-events: auto;
-    transform: translate(-50%, 0);
-  }
-  .cart-pill .cart-total{ color: var(--saffron); font-weight: 700; }
-
-  /* ---------- cart modal ---------- */
-  .cart-overlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(34,20,8,0.55);
-    z-index: 30;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-  }
-  .cart-overlay.show{ opacity: 1; pointer-events: auto; }
-
-  .cart-modal{
-    background: var(--cream);
-    border: 4px double var(--ink);
-    border-bottom: none;
-    width: 100%;
-    max-width: 480px;
-    max-height: 80vh;
-    padding: 1.4rem 1.3rem 1.6rem;
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
     display:flex;
     flex-direction:column;
-    transform: translateY(20px);
-    transition: transform 0.28s cubic-bezier(0.2,0.7,0.2,1);
-  }
-  .cart-overlay.show .cart-modal{ transform: translateY(0); }
-
-  .cart-modal h3{
-    font-family:'Playfair Display', serif;
-    font-size: 1.3rem;
-    margin-bottom: 0.9rem;
+    align-items:center;
+    justify-content:center;
+    padding: 1.2rem;
   }
 
-  .cart-list{
-    overflow-y: auto;
-    flex: 1;
+  h1{ font-size: 1.3rem; margin-bottom: 1.5rem; text-align:center; }
+
+  /* --- écran PIN --- */
+  #pinScreen{ text-align:center; width:100%; max-width:300px; }
+  #pinInput{
+    width: 100%;
+    font-size: 1.6rem;
+    letter-spacing: 0.5rem;
+    text-align:center;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
     margin-bottom: 1rem;
   }
-
-  .cart-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap: 0.6rem;
-    padding: 0.6rem 0;
-    border-bottom: 1px dashed rgba(34,20,8,0.18);
-  }
-
-  .cart-row .cr-name{ font-size: 0.92rem; }
-  .cart-row .cr-controls{
-    display:flex;
-    align-items:center;
-    gap: 0.5rem;
-  }
-  .cart-row button{
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    border: 1px solid var(--ink);
-    background: transparent;
+  #pinBtn{
+    width:100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    background: var(--saffron);
     color: var(--ink);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor:pointer;
+  }
+  #pinError{ color: #e88; font-size: 0.85rem; margin-top: 0.7rem; min-height: 1.2em; }
+
+  /* --- écran scanner --- */
+  #scanScreen{ display:none; width:100%; max-width:420px; text-align:center; }
+  #video{
+    width: 100%;
+    border-radius: 12px;
+    border: 3px solid var(--saffron);
+    margin-bottom: 1.2rem;
+    background: #000;
+  }
+  #canvas{ display:none; }
+
+  #result{
+    min-height: 90px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
     font-size: 0.95rem;
-    line-height: 1;
+  }
+  #result.idle{ background: rgba(255,255,255,0.06); color: rgba(246,238,223,0.6); }
+  #result.success{ background: rgba(63,143,74,0.2); border: 1.5px solid var(--green); }
+  #result.error{ background: rgba(122,46,34,0.3); border: 1.5px solid var(--brick); }
+  #result b{ font-size: 1.3rem; display:block; margin-bottom: 0.3rem; }
+
+  #manualBtn{
+    background: none;
+    border: 1px solid rgba(246,238,223,0.4);
+    color: var(--cream);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
     cursor: pointer;
   }
-  .cart-row .cr-price{
-    font-family:'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 0.88rem;
-    min-width: 52px;
-    text-align: right;
-    color: var(--brick);
-  }
 
-  .cart-empty{
-    text-align:center;
-    padding: 1.5rem 0;
-    color: var(--brick);
+  #manualForm{ display:none; margin-top: 1rem; width:100%; }
+  #manualEmail, #manualPhone{
+    width:100%;
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 0.6rem;
     font-size: 0.9rem;
   }
-
-  .cart-total-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    font-family:'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 1.15rem;
-    border-top: 1.5px solid var(--ink);
-    padding-top: 0.8rem;
-    margin-bottom: 1rem;
-  }
-
-  .cart-actions{
-    display:flex;
-    gap: 0.6rem;
-  }
-
-  .btn-send, .btn-clear, .btn-close{
-    font-family:'Lora', serif;
-    font-weight: 600;
-    font-size: 0.85rem;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
+  #manualAdd{
+    width:100%;
+    padding: 0.7rem;
+    border-radius: 8px;
     border: none;
-    cursor: pointer;
-  }
-  .btn-send{ flex: 1; background: var(--saffron); color: var(--ink); }
-  .btn-clear{ background: transparent; border: 1px solid var(--ink); color: var(--ink); }
-  .btn-close{
-    position: absolute;
-    top: 0.9rem;
-    right: 1rem;
-    background: transparent;
-    border: none;
-    font-size: 1.3rem;
-    color: var(--ink);
-    cursor: pointer;
-  }
-  html[dir="rtl"] .btn-close{ right: auto; left: 1rem; }
-
-  /* ---------- carte de fidélité ---------- */
-  .loyalty-btn{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap: 0.4rem;
-    border: 1px solid var(--ink);
-    color: var(--ink);
-    text-decoration: none;
-    padding: 0.5rem 0.9rem;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    background: none;
-    cursor: pointer;
-    font-family: 'Lora', serif;
-  }
-  .loyalty-btn:hover{ background: var(--ink); color: var(--cream); }
-
-  .loyalty-overlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(34,20,8,0.55);
-    z-index: 35;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-    padding: 1rem;
-  }
-  .loyalty-overlay.show{ opacity: 1; pointer-events: auto; }
-
-  .loyalty-box{
-    background: var(--cream);
-    border: 4px double var(--ink);
-    padding: 1.6rem 1.4rem;
-    width: 100%;
-    max-width: 360px;
-    text-align: center;
-  }
-  .loyalty-box h4{
-    font-family:'Playfair Display', serif;
-    font-size: 1.2rem;
-    margin-bottom: 0.3rem;
-  }
-  .loyalty-box .loyalty-sub{
-    font-size: 0.8rem;
-    color: var(--brick);
-    margin-bottom: 1.2rem;
-  }
-  .stamp-grid{
-    display:grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0.6rem;
-    margin-bottom: 1.2rem;
-  }
-  .stamp{
-    aspect-ratio: 1;
-    border: 1.5px dashed var(--ink);
-    border-radius: 50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size: 1.1rem;
-  }
-  .stamp.filled{
-    border-style: solid;
     background: var(--saffron);
-  }
-  .loyalty-reward{
-    background: rgba(185,134,47,0.15);
-    border: 1.5px solid var(--saffron);
-    padding: 0.8rem;
-    font-family:'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 0.95rem;
-    margin-bottom: 0.9rem;
-  }
-  .loyalty-reset{
-    font-family:'Lora', serif;
-    font-weight: 600;
-    font-size: 0.8rem;
-    padding: 0.65rem 1rem;
-    border: 1px solid var(--ink);
-    background: transparent;
     color: var(--ink);
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .loy-input{
-    width: 100%;
-    padding: 0.65rem 0.8rem;
-    margin-bottom: 0.6rem;
-    border: 1px solid var(--ink);
-    background: transparent;
-    font-family: 'Lora', serif;
-    font-size: 0.88rem;
-    color: var(--ink);
-    border-radius: 3px;
-  }
-  .loy-input::placeholder{ color: rgba(34,20,8,0.5); }
-
-  .loyalty-qr{
-    display:flex;
-    justify-content:center;
-    margin-bottom: 0.8rem;
-  }
-  .loyalty-qr img, .loyalty-qr canvas{
-    width: 150px; height: 150px;
-    border: 6px solid #fff;
-    box-shadow: 0 2px 10px rgba(34,20,8,0.2);
-  }
-  .loyalty-phone-display{
-    font-family:'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 1.15rem;
-    letter-spacing: 0.03em;
-    margin-bottom: 0.5rem;
-  }
-
-  .loyalty-hint{
-    font-size: 0.76rem;
-    color: var(--brick);
-    margin-bottom: 1rem;
-  }
-
-  .toast{
-    position: fixed;
-    left: 50%;
-    bottom: 92px;
-    transform: translate(-50%, 12px);
-    background: var(--ink);
-    color: var(--cream);
-    padding: 0.8rem 1.2rem;
-    border-radius: 6px;
-    font-size: 0.88rem;
-    z-index: 40;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    text-align: center;
-    max-width: 90%;
-  }
-  .toast.show{ opacity: 1; transform: translate(-50%, 0); }
-
-  /* ---------- sugar picker ---------- */
-  .sugar-overlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(34,20,8,0.55);
-    z-index: 35;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-    padding: 1rem;
-  }
-  .sugar-overlay.show{ opacity: 1; pointer-events: auto; }
-
-  .sugar-box{
-    background: var(--cream);
-    border: 4px double var(--ink);
-    padding: 1.4rem 1.3rem;
-    width: 100%;
-    max-width: 340px;
-    transform: scale(0.94);
-    transition: transform 0.2s ease;
-  }
-  .sugar-overlay.show .sugar-box{ transform: scale(1); }
-
-  .sugar-box h4{
-    font-family:'Playfair Display', serif;
-    font-size: 1.05rem;
-    margin-bottom: 0.2rem;
-  }
-  .sugar-box .sugar-item-name{
-    font-size: 0.82rem;
-    color: var(--brick);
-    margin-bottom: 1rem;
-  }
-
-  .sugar-options{
-    display:grid;
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-  .sugar-options button{
-    font-family:'Lora', serif;
-    font-weight: 600;
-    font-size: 0.85rem;
-    padding: 0.65rem 0.4rem;
-    border: 1.5px solid var(--ink);
-    background: transparent;
-    color: var(--ink);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
-  }
-  .sugar-options button:active,
-  .sugar-options button:hover{
-    background: var(--ink);
-    color: var(--cream);
-  }
-
-  /* ---------- google map ---------- */
-  .map-embed{
-    margin-top: 1rem;
-    border: 1.5px solid var(--ink);
-    overflow: hidden;
-    max-width: 460px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .map-embed iframe{
-    width: 100%;
-    height: 170px;
-    display: block;
-    border: 0;
-    filter: grayscale(0.35) sepia(0.1);
-  }
-
-  /* ---------- avis clients ---------- */
-  .reviews{
-    text-align:center;
-    margin-bottom: 2.4rem;
-  }
-  .reviews .stars{
-    color: var(--saffron);
-    font-size: 1.3rem;
-    letter-spacing: 0.1em;
-  }
-  .reviews .rating-line{
-    font-size: 0.85rem;
-    color: var(--brick);
-    margin-bottom: 1.1rem;
-  }
-  .review-quotes{
-    display:flex;
-    flex-direction:column;
-    gap: 0.7rem;
-    max-width: 460px;
-    margin: 0 auto;
-  }
-  .review-quotes blockquote{
-    font-family:'Playfair Display', serif;
-    font-style: italic;
-    font-size: 0.92rem;
-    border-left: 2px solid var(--saffron);
-    padding-left: 0.8rem;
-    text-align: left;
-  }
-  html[dir="rtl"] .review-quotes blockquote{
-    border-left: none;
-    border-right: 2px solid var(--saffron);
-    padding-left: 0;
-    padding-right: 0.8rem;
-    text-align: right;
-    font-family: 'Tajawal', sans-serif;
-    font-style: normal;
-  }
-
-  @media (max-width: 400px){
-    .sticky-bar a{ font-size: 0.78rem; }
+    font-weight:700;
+    cursor:pointer;
   }
 </style>
 </head>
 <body>
 
-<div class="frame">
+<div id="pinScreen">
+  <h1>☕ Espace comptoir — Café Issam</h1>
+  <input type="password" id="pinInput" inputmode="numeric" maxlength="4" placeholder="Code à 4 chiffres">
+  <button id="pinBtn">Entrer</button>
+  <div id="pinError"></div>
+</div>
 
-  <svg class="corner tl" viewBox="0 0 100 100">
-    <path d="M8 92 Q8 40 60 15" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
-    <path d="M20 30 Q12 20 18 8" fill="none" stroke="var(--ink)" stroke-width="1.2"/>
-    <ellipse cx="26" cy="24" rx="7" ry="3.5" fill="var(--ink)" transform="rotate(-30 26 24)"/>
-    <ellipse cx="38" cy="17" rx="7" ry="3.5" fill="var(--ink)" transform="rotate(-15 38 17)"/>
-    <ellipse cx="52" cy="14" rx="6" ry="3" fill="var(--ink)" transform="rotate(-5 52 14)"/>
-    <ellipse cx="14" cy="50" rx="6" ry="3" fill="var(--ink)" transform="rotate(75 14 50)"/>
-  </svg>
-  <svg class="corner br" viewBox="0 0 100 100">
-    <path d="M8 92 Q8 40 60 15" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
-    <path d="M20 30 Q12 20 18 8" fill="none" stroke="var(--ink)" stroke-width="1.2"/>
-    <ellipse cx="26" cy="24" rx="7" ry="3.5" fill="var(--ink)" transform="rotate(-30 26 24)"/>
-    <ellipse cx="38" cy="17" rx="7" ry="3.5" fill="var(--ink)" transform="rotate(-15 38 17)"/>
-    <ellipse cx="52" cy="14" rx="6" ry="3" fill="var(--ink)" transform="rotate(-5 52 14)"/>
-    <ellipse cx="14" cy="50" rx="6" ry="3" fill="var(--ink)" transform="rotate(75 14 50)"/>
-  </svg>
-
-  <header>
-    <div class="lang-switch">
-      <div class="lang-switch-inner">
-        <button class="lang-btn active" data-lang="fr">FR</button>
-        <button class="lang-btn" data-lang="ar">عربي</button>
-      </div>
-    </div>
-
-    <div class="eyebrow" data-fr="Le café de quartier" data-ar="قهوة الحي">Le café de quartier</div>
-    <div class="note" data-fr="Oulad Oujih, Bloc M 706, Kénitra" data-ar="أولاد أوجيه، بلوك م 706، القنيطرة">Oulad Oujih, Bloc M 706, Kénitra</div>
-    <h1 data-fr="Café Issam" data-ar="قهوة عصام">Café Issam</h1>
-    <div class="rule"></div>
-    <div class="infos">
-      <span data-fr="9h – 00h tous les jours" data-ar="9 صباحاً – منتصف الليل يومياً">9h – 00h tous les jours</span>
-    </div>
-    <div class="open-status" id="openStatus">
-      <span class="dot" id="openDot"></span>
-      <span id="openText"></span>
-    </div>
-  </header>
-
-  <div class="hero">
-    <img class="slide active" src="cafe-1.jpg" alt="Grains de café torréfiés" loading="lazy">
-    <img class="slide" src="cafe-3.gif" alt="Extraction de café" loading="lazy">
-    <div class="scroll-cue" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cream)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-    </div>
+<div id="scanScreen">
+  <h1>Scanner la carte du client</h1>
+  <video id="video" playsinline></video>
+  <canvas id="canvas"></canvas>
+  <div id="result" class="idle">En attente d'un QR code…</div>
+  <button id="manualBtn">Ajouter manuellement par téléphone</button>
+  <div id="manualForm">
+    <input type="tel" id="manualPhone" placeholder="Numéro de téléphone du client">
+    <button id="manualAdd">+1 café</button>
   </div>
-
-  <main>
-
-    <div class="story">
-      <p data-fr="« Chez nous, chaque café se prépare comme pour un invité — pas à la chaîne. C'est ce qui fait revenir les gens du quartier, jour après jour. »" data-ar="«عندنا، كل قهوة تُحضّر كأنها لضيف — مو بالجملة. هذا اللي يخلي ناس الحي يرجعوا، يوم بعد يوم.»">« Chez nous, chaque café se prépare comme pour un invité — pas à la chaîne. C'est ce qui fait revenir les gens du quartier, jour après jour. »</p>
-    </div>
-
-    <div class="intro" data-fr="Commande et retrait au magasin · 06 77 10 62 40 ou WhatsApp 06 69 39 35 31." data-ar="الطلب والاستلام من المحل · 06 77 10 62 40 أو واتساب 06 69 39 35 31.">
-      Commande et retrait au magasin · 06 77 10 62 40 ou WhatsApp 06 69 39 35 31.
-    </div>
-
-    <div class="section-title">
-      <h2 class="carte-title" data-fr="La Carte" data-ar="القائمة">La Carte</h2>
-      <div class="rule"></div>
-    </div>
-
-    <section class="reveal">
-      <div class="cat-head"><h2 data-fr="Cafés" data-ar="قهوة">Cafés</h2></div>
-      <div class="item sugar loyalty" data-price="7"><div class="nom" data-fr="Café normal" data-ar="قهوة عادية">Café normal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item sugar loyalty" data-price="7"><div class="nom" data-fr="Café léger" data-ar="قهوة خفيفة">Café léger</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item sugar loyalty" data-price="9"><div class="nom" data-fr="Café allongé" data-ar="قهوة ألونجي">Café allongé</div><span class="qty-badge"></span><div class="prix" data-fr="9 DH" data-ar="9 درهم">9 DH</div></div>
-      <div class="item sugar loyalty" data-price="8"><div class="nom" data-fr="Café au lait" data-ar="قهوة بالحليب">Café au lait</div><span class="qty-badge"></span><div class="prix" data-fr="8 DH" data-ar="8 درهم">8 DH</div></div>
-      <div class="item sugar loyalty" data-price="7"><div class="nom" data-fr="Café noir italien" data-ar="قهوة سوداء إيطالية">Café noir italien</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item sugar loyalty" data-price="7"><div class="nom" data-fr="Café noir royal" data-ar="قهوة سوداء رويال">Café noir royal</div><span class="qty-badge"></span><div class="prix" data-fr="7 DH" data-ar="7 درهم">7 DH</div></div>
-      <div class="item sugar" data-price="9"><div class="nom" data-fr="Lait au chocolat" data-ar="حليب بالشوكولاطة">Lait au chocolat</div><span class="qty-badge"></span><div class="prix" data-fr="9 DH" data-ar="9 درهم">9 DH</div></div>
-    </section>
-
-    <section class="reveal">
-      <div class="cat-head"><h2 data-fr="Boissons" data-ar="مشروبات">Boissons</h2></div>
-      <div class="item orderable" data-price="10"><div class="nom" data-fr="Limonade énergie petite" data-ar="ليموناضة طاقة صغيرة">Limonade énergie petite</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
-      <div class="item orderable" data-price="15"><div class="nom" data-fr="Limonade énergie moyenne" data-ar="ليموناضة طاقة متوسطة">Limonade énergie moyenne</div><span class="qty-badge"></span><div class="prix" data-fr="15 DH" data-ar="15 درهم">15 DH</div></div>
-      <div class="item orderable" data-price="10"><div class="nom" data-fr="Coca-Cola" data-ar="كوكا كولا">Coca-Cola</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
-      <div class="item orderable" data-price="10"><div class="nom" data-fr="Sprite" data-ar="سبرايت">Sprite</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
-      <div class="item orderable" data-price="10"><div class="nom" data-fr="Pom's" data-ar="بومز">Pom's</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
-      <div class="item orderable" data-price="10"><div class="nom" data-fr="Hawaï" data-ar="هاواي">Hawaï</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
-      <div class="item orderable" data-price="10"><div class="nom" data-fr="Schweppes" data-ar="شويبس">Schweppes</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
-    </section>
-
-    <section class="reveal">
-      <div class="cat-head"><h2 data-fr="Jus" data-ar="عصير">Jus</h2></div>
-      <div class="item orderable" data-price="10"><div class="nom" data-fr="Jus d'orange" data-ar="عصير البرتقال">Jus d'orange</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
-      <div class="item"><div class="nom" data-fr="Autres jus" data-ar="عصائر أخرى">Autres jus</div><div class="prix" data-fr="sur demande" data-ar="عند الطلب">sur demande</div></div>
-    </section>
-
-    <section class="reveal">
-      <div class="cat-head"><h2 data-fr="Eaux" data-ar="ماء">Eaux</h2></div>
-      <div class="item orderable" data-price="2"><div class="nom" data-fr="Ain Atlas petite" data-ar="عين أطلس صغيرة">Ain Atlas petite</div><span class="qty-badge"></span><div class="prix" data-fr="2 DH" data-ar="2 درهم">2 DH</div></div>
-      <div class="item orderable" data-price="6"><div class="nom" data-fr="Ain Atlas grande" data-ar="عين أطلس كبيرة">Ain Atlas grande</div><span class="qty-badge"></span><div class="prix" data-fr="6 DH" data-ar="6 درهم">6 DH</div></div>
-    </section>
-
-    <section class="reveal">
-      <div class="cat-head"><h2 data-fr="Thé à la menthe" data-ar="أتاي بالنعناع">Thé à la menthe</h2></div>
-      <div class="item sugar" data-price="10"><div class="nom" data-fr="Thé à la menthe" data-ar="أتاي بالنعناع">Thé à la menthe</div><span class="qty-badge"></span><div class="prix" data-fr="10 DH" data-ar="10 درهم">10 DH</div></div>
-    </section>
-
-    <section class="reveal">
-      <div class="cat-head"><h2 data-fr="Gâteaux" data-ar="حلويات">Gâteaux</h2></div>
-      <div class="item orderable" data-price="2"><div class="nom" data-fr="Madeleine" data-ar="مادلين">Madeleine</div><span class="qty-badge"></span><div class="prix" data-fr="2 DH" data-ar="2 درهم">2 DH</div></div>
-    </section>
-
-  </main>
-
-  <footer>
-    <div class="orari" data-fr="Ouvert tous les jours · 9h00 – 00h00" data-ar="مفتوح كل يوم · من 9 صباحاً إلى منتصف الليل">Ouvert tous les jours · 9h00 – 00h00</div>
-    <div class="indirizzo" data-fr="Oulad Oujih, Bloc M 706, Kénitra 14000" data-ar="أولاد أوجيه، بلوك م 706، القنيطرة 14000">Oulad Oujih, Bloc M 706, Kénitra 14000</div>
-
-    <div class="reviews">
-      <div class="stars">★★★★★</div>
-      <div class="rating-line" data-fr="4,9 / 5 · 8 avis Google" data-ar="4.9 / 5 · 8 تقييمات Google">4,9 / 5 · 8 avis Google</div>
-      <div class="review-quotes">
-        <blockquote data-fr="« Top quality coffee »" data-ar="«Top quality coffee»">« Top quality coffee »</blockquote>
-        <blockquote data-fr="« Top, iksbirions tbarkalh 3andhom café zwina »" data-ar="«Top, iksbirions tbarkalh 3andhom café zwina»">« Top, iksbirions tbarkalh 3andhom café zwina »</blockquote>
-        <blockquote data-fr="« Top cafe »" data-ar="«Top cafe»">« Top cafe »</blockquote>
-      </div>
-    </div>
-
-    <div class="map-embed">
-      <iframe src="https://maps.google.com/maps?q=34.2555987,-6.6272453&z=16&output=embed" loading="lazy" title="Localisation Café Issam"></iframe>
-    </div>
-
-    <div class="social-links">
-      <button class="loyalty-btn" id="loyaltyBtn">
-        <span>🎟️</span>
-        <span data-fr="Ma carte fidélité" data-ar="بطاقة الولاء">Ma carte fidélité</span>
-      </button>
-      <a href="#" id="installBtn" style="display:none;">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
-        <span data-fr="Installer l'app" data-ar="تثبيت التطبيق">Installer l'app</span>
-      </a>
-      <a href="#" id="shareBtn">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
-        <span data-fr="Partager le menu" data-ar="مشاركة القائمة">Partager le menu</span>
-      </a>
-      <a href="https://www.tiktok.com/@issamabel59" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16.6 5.82c-1.02-.9-1.6-2.19-1.6-3.52h-3.14v14.24c0 1.6-1.3 2.9-2.9 2.9a2.9 2.9 0 1 1 0-5.8c.27 0 .53.04.78.1V10.4a6.1 6.1 0 0 0-.78-.05A6.06 6.06 0 0 0 3 16.42a6.06 6.06 0 0 0 6.06 6.06 6.06 6.06 0 0 0 6.06-6.06V9.15a9.1 9.1 0 0 0 4.9 1.43V7.44c-1.2 0-2.36-.4-3.32-1.14a5 5 0 0 1-.1-.48z"/></svg>
-        <span data-fr="TikTok" data-ar="تيك توك">TikTok</span>
-      </a>
-      <a href="https://search.google.com/local/writereview?placeid=ChIJxQ5xNidZpw0RNctiSglBX-g" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2 14.5 9.5 22 9.5 16 14.1 18.2 21.6 12 17.3 5.8 21.6 8 14.1 2 9.5 9.5 9.5Z"/></svg>
-        <span data-fr="Laisser un avis" data-ar="اترك تقييماً">Laisser un avis</span>
-      </a>
-    </div>
-  </footer>
-
+  <button id="redeemBtn" style="display:none; margin-top:1rem; width:100%; padding:0.8rem; border-radius:8px; border:none; background:var(--green); color:#fff; font-weight:700; cursor:pointer;">✓ Confirmer la remise du café offert</button>
 </div>
 
-<div class="cart-pill" id="cartPill">
-  <span data-fr="🛒" data-ar="🛒">🛒</span>
-  <span id="cartCount">0</span>
-  <span data-fr="article(s) ·" data-ar="عنصر ·">article(s) ·</span>
-  <span class="cart-total" id="cartPillTotal">0 DH</span>
-</div>
-
-<div class="cart-overlay" id="cartOverlay">
-  <div class="cart-modal">
-    <button class="btn-close" id="cartClose" aria-label="Fermer">×</button>
-    <h3 data-fr="Votre commande" data-ar="طلبك">Votre commande</h3>
-    <div class="cart-list" id="cartList"></div>
-    <div class="cart-total-row">
-      <span data-fr="Total" data-ar="المجموع">Total</span>
-      <span id="cartModalTotal">0 DH</span>
-    </div>
-    <div class="cart-actions">
-      <button class="btn-clear" id="cartClear" data-fr="Vider" data-ar="إفراغ">Vider</button>
-      <button class="btn-send" id="cartSend" data-fr="Envoyer sur WhatsApp" data-ar="إرسال عبر واتساب">Envoyer sur WhatsApp</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<div class="loyalty-overlay" id="loyaltyOverlay">
-  <div class="loyalty-box">
-    <h4 data-fr="Carte fidélité" data-ar="بطاقة الولاء">Carte fidélité</h4>
-    <div class="loyalty-sub" data-fr="Le 10ème café est offert" data-ar="القهوة العاشرة مجانية">Le 10ème café est offert</div>
-
-    <div id="loyaltyForm">
-      <input type="text" id="loyPrenom" class="loy-input" data-fr-ph="Prénom" data-ar-ph="الاسم الأول" placeholder="Prénom">
-      <input type="text" id="loyNom" class="loy-input" data-fr-ph="Nom" data-ar-ph="اللقب" placeholder="Nom">
-      <input type="tel" id="loyPhone" class="loy-input" data-fr-ph="Numéro de téléphone" data-ar-ph="رقم الهاتف" placeholder="Numéro de téléphone">
-      <input type="email" id="loyEmail" class="loy-input" data-fr-ph="Email (optionnel)" data-ar-ph="البريد الإلكتروني (اختياري)" placeholder="Email (optionnel)">
-      <button class="loyalty-reset" id="loyaltyRegister" data-fr="Créer ma carte" data-ar="إنشاء بطاقتي" style="width:100%;">Créer ma carte</button>
-    </div>
-
-    <div id="loyaltyCardView" style="display:none;">
-      <div id="loyaltyQr" class="loyalty-qr"></div>
-      <div class="loyalty-phone-display" id="loyaltyPhoneDisplay"></div>
-      <div class="loyalty-hint" data-fr="Montre ce code au comptoir à chaque café" data-ar="أرِ هذا الرمز عند الكاونتر مع كل قهوة">Montre ce code au comptoir à chaque café</div>
-      <div class="stamp-grid" id="stampGrid"></div>
-      <div class="loyalty-reward" id="loyaltyReward" style="display:none;" data-fr="🎉 Café offert ! Montre cet écran au comptoir" data-ar="🎉 قهوة مجانية! أرِ هذه الشاشة عند الكاونتر">🎉 Café offert ! Montre cet écran au comptoir</div>
-    </div>
-
-    <button class="loyalty-reset" id="loyaltyClose" data-fr="Fermer" data-ar="إغلاق">Fermer</button>
-  </div>
-</div>
-
-<div class="sugar-overlay" id="sugarOverlay">
-  <div class="sugar-box">
-    <h4 data-fr="Niveau de sucre" data-ar="مستوى السكر">Niveau de sucre</h4>
-    <div class="sugar-item-name" id="sugarItemName"></div>
-    <div class="sugar-options">
-      <button data-level-fr="Sans sucre" data-level-ar="بدون سكر">Sans sucre</button>
-      <button data-level-fr="Demi sucre" data-level-ar="نص سكر">Demi sucre</button>
-      <button data-level-fr="1 sucre" data-level-ar="سكر واحد">1 sucre</button>
-      <button data-level-fr="2 sucres" data-level-ar="سكرين">2 sucres</button>
-      <button data-level-fr="3 sucres" data-level-ar="3 سكاكر">3 sucres</button>
-    </div>
-  </div>
-</div>
-
-<div class="sticky-bar">
-  <a class="call" href="tel:0677106240">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-    <span data-fr="Commande & retrait" data-ar="الطلب والاستلام">Commande &amp; retrait</span>
-    <span class="num">06 77 10 62 40</span>
-  </a>
-  <a class="wa" href="https://wa.me/212669393531" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a9 9 0 0 0-7.79 13.44L3 21l3.65-1.24a9 9 0 0 0 4.4 1.14 9 9 0 0 0 6.55-15.58zm-5.55 13.7a7.44 7.44 0 0 1-3.8-1.04l-.27-.16-2.26.77.75-2.2-.18-.28a7.5 7.5 0 1 1 5.76 2.91zm4.1-5.6c-.22-.11-1.32-.65-1.53-.72s-.35-.11-.5.11-.58.72-.71.87-.26.17-.48.06a6.13 6.13 0 0 1-1.8-1.11 6.7 6.7 0 0 1-1.24-1.54c-.13-.22 0-.34.1-.45s.22-.26.33-.39a1.5 1.5 0 0 0 .22-.37.4.4 0 0 0 0-.39c-.06-.11-.5-1.2-.68-1.65s-.36-.37-.5-.38h-.43a.82.82 0 0 0-.6.28 2.5 2.5 0 0 0-.78 1.86 4.35 4.35 0 0 0 .91 2.3 9.95 9.95 0 0 0 3.8 3.36c.53.23.94.36 1.26.47a3 3 0 0 0 1.4.09 2.3 2.3 0 0 0 1.5-1.06 1.87 1.87 0 0 0 .13-1.06c-.06-.1-.2-.16-.42-.27z"/></svg>
-    <span data-fr="Commande & retrait" data-ar="الطلب والاستلام">Commande &amp; retrait</span>
-    <span class="num" data-fr="WhatsApp · 06 69 39 35 31" data-ar="واتساب · 06 69 39 35 31">WhatsApp · 06 69 39 35 31</span>
-  </a>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
-  function setLang(lang){
-    currentLang = lang;
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.querySelectorAll('[data-fr]').forEach(function(el){
-      el.textContent = el.getAttribute('data-' + lang);
+  var PIN_HASH = 'd3bc7beb95452a5c752b2b81b9879c31a84c07a27ff571552f7dfefef5995c9a'; // empreinte du code, jamais en clair
+  // Pour changer le code : redemande-moi une nouvelle empreinte pour le nouveau code choisi.
+
+  function sha256(text){
+    var enc = new TextEncoder().encode(text);
+    return crypto.subtle.digest('SHA-256', enc).then(function(buf){
+      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2, '0'); }).join('');
     });
-    document.querySelectorAll('[data-fr-ph]').forEach(function(el){
-      el.setAttribute('placeholder', el.getAttribute('data-' + lang + '-ph'));
-    });
-    document.querySelectorAll('.lang-btn').forEach(function(b){
-      b.classList.toggle('active', b.dataset.lang === lang);
-    });
-    renderCart();
   }
-  var currentLang = 'fr';
-  document.querySelectorAll('.lang-btn').forEach(function(b){
-    b.addEventListener('click', function(){ setLang(b.dataset.lang); });
-  });
+  var LOYALTY_API = 'https://script.google.com/macros/s/AKfycbyfB6aN1siytWR10LXZDbUL983oOcK7OBglFR9b48emZpcyqVPtqTZV1ffiQCQFVY6zJA/exec';
+  var LOYALTY_KEY_SECRET = 'issam-fidelite-2026';
 
-  /* ---------- panier ---------- */
-  var cart = {}; // { itemIndex: { nameFr, nameAr, price, qty } }
-  var toastTimer = null;
-
-  var strings = {
-    fr: {
-      empty: 'Panier vide — touchez un article du menu pour l\'ajouter.',
-      sent: 'Commande envoyée ! On s\'en occupe 🙌',
-      added: 'ajouté ✓'
-    },
-    ar: {
-      empty: 'السلة فارغة — اضغط على أي عنصر من القائمة لإضافته.',
-      sent: 'تم إرسال الطلب! سنجهزه لك 🙌',
-      added: 'تمت الإضافة ✓'
-    }
-  };
-
-  function showToast(text){
-    var t = document.getElementById('toast');
-    t.textContent = text;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
-  }
-
-  function cartTotal(){
-    var total = 0;
-    Object.keys(cart).forEach(function(k){ total += cart[k].price * cart[k].qty; });
-    return total;
-  }
-
-  function cartCount(){
-    var count = 0;
-    Object.keys(cart).forEach(function(k){ count += cart[k].qty; });
-    return count;
-  }
-
-  function renderCart(){
-    var count = cartCount();
-    var total = cartTotal();
-    var pill = document.getElementById('cartPill');
-    document.getElementById('cartCount').textContent = count;
-    document.getElementById('cartPillTotal').textContent = total + ' DH';
-    document.getElementById('cartModalTotal').textContent = total + ' DH';
-    pill.classList.toggle('show', count > 0);
-
-    var list = document.getElementById('cartList');
-    list.innerHTML = '';
-    var keys = Object.keys(cart);
-    if (keys.length === 0){
-      var empty = document.createElement('div');
-      empty.className = 'cart-empty';
-      empty.textContent = strings[currentLang].empty;
-      list.appendChild(empty);
-    } else {
-      keys.forEach(function(k){
-        var entry = cart[k];
-        var row = document.createElement('div');
-        row.className = 'cart-row';
-        var name = currentLang === 'ar' ? entry.nameAr : entry.nameFr;
-        var sugarLabel = entry.sugar ? (currentLang === 'ar' ? entry.sugarAr : entry.sugarFr) : '';
-        row.innerHTML =
-          '<div class="cr-name">' + name + (sugarLabel ? ' <em style="font-style:italic;opacity:0.7;font-size:0.8em;">(' + sugarLabel + ')</em>' : '') + '</div>' +
-          '<div class="cr-controls">' +
-            '<button data-action="dec" data-key="' + k + '">−</button>' +
-            '<span>' + entry.qty + '</span>' +
-            '<button data-action="inc" data-key="' + k + '">+</button>' +
-          '</div>' +
-          '<div class="cr-price">' + (entry.price * entry.qty) + ' DH</div>';
-        list.appendChild(row);
-      });
-    }
-
-    // badges sur le menu (agrège toutes les variantes sucre d'un même article)
-    document.querySelectorAll('.item[data-idx]').forEach(function(el){
-      var idx = el.dataset.idx;
-      var badge = el.querySelector('.qty-badge');
-      var qty = 0;
-      Object.keys(cart).forEach(function(k){
-        if (String(cart[k].idx) === String(idx)) qty += cart[k].qty;
-      });
-      if (qty > 0){
-        badge.textContent = qty;
-        badge.classList.add('show');
+  // --- PIN ---
+  var pinScreen = document.getElementById('pinScreen');
+  var scanScreen = document.getElementById('scanScreen');
+  function tryPin(){
+    var val = document.getElementById('pinInput').value.trim();
+    sha256(val).then(function(hash){
+      if (hash === PIN_HASH){
+        sessionStorage.setItem('comptoir_ok', '1');
+        pinScreen.style.display = 'none';
+        scanScreen.style.display = 'block';
+        startCamera();
       } else {
-        badge.classList.remove('show');
+        document.getElementById('pinError').textContent = 'Code incorrect';
       }
     });
   }
-
-  function addToCart(idx, nameFr, nameAr, price, sugarFr, sugarAr, isLoyalty){
-    var key = sugarFr ? (idx + '-' + sugarFr) : String(idx);
-    if (!cart[key]) cart[key] = { idx: idx, nameFr: nameFr, nameAr: nameAr, price: price, qty: 0, sugar: !!sugarFr, sugarFr: sugarFr, sugarAr: sugarAr, loyalty: !!isLoyalty };
-    cart[key].qty += 1;
-    renderCart();
-    var label = (currentLang === 'ar' ? nameAr : nameFr) + (sugarFr ? ' (' + (currentLang === 'ar' ? sugarAr : sugarFr) + ')' : '');
-    showToast(label + ' ' + strings[currentLang].added);
+  document.getElementById('pinBtn').addEventListener('click', tryPin);
+  document.getElementById('pinInput').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') tryPin();
+  });
+  if (sessionStorage.getItem('comptoir_ok') === '1'){
+    pinScreen.style.display = 'none';
+    scanScreen.style.display = 'block';
   }
 
-  // articles simples (sans choix de sucre)
-  document.querySelectorAll('.item.orderable').forEach(function(el, idx){
-    el.dataset.idx = 'o' + idx;
-    el.addEventListener('click', function(){
-      var price = parseFloat(el.dataset.price);
-      var nameFr = el.querySelector('.nom').getAttribute('data-fr');
-      var nameAr = el.querySelector('.nom').getAttribute('data-ar');
-      addToCart(el.dataset.idx, nameFr, nameAr, price, null, null, el.classList.contains('loyalty'));
-    });
-  });
+  // --- scanner ---
+  var video = document.getElementById('video');
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var resultBox = document.getElementById('result');
+  var scanning = true;
+  var lastScan = 0;
 
-  // articles avec choix de sucre obligatoire
-  var sugarOverlay = document.getElementById('sugarOverlay');
-  var pendingItem = null;
-  document.querySelectorAll('.item.sugar').forEach(function(el, idx){
-    el.dataset.idx = 's' + idx;
-    el.classList.add('orderable');
-    el.addEventListener('click', function(){
-      pendingItem = {
-        idx: el.dataset.idx,
-        price: parseFloat(el.dataset.price),
-        nameFr: el.querySelector('.nom').getAttribute('data-fr'),
-        nameAr: el.querySelector('.nom').getAttribute('data-ar'),
-        loyalty: el.classList.contains('loyalty')
-      };
-      document.getElementById('sugarItemName').textContent = currentLang === 'ar' ? pendingItem.nameAr : pendingItem.nameFr;
-      sugarOverlay.classList.add('show');
-    });
-  });
+  function startCamera(){
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(function(stream){
+        video.srcObject = stream;
+        video.setAttribute('playsinline', true);
+        video.play();
+        requestAnimationFrame(tick);
+      })
+      .catch(function(){
+        resultBox.className = 'error';
+        resultBox.innerHTML = '<b>Caméra inaccessible</b>Autorise la caméra ou utilise l\'ajout manuel ci-dessous.';
+      });
+  }
 
-  document.querySelectorAll('.sugar-options button').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      if (!pendingItem) return;
-      addToCart(pendingItem.idx, pendingItem.nameFr, pendingItem.nameAr, pendingItem.price,
-        btn.getAttribute('data-level-fr'), btn.getAttribute('data-level-ar'), pendingItem.loyalty);
-      sugarOverlay.classList.remove('show');
-      pendingItem = null;
-    });
-  });
-  sugarOverlay.addEventListener('click', function(e){
-    if (e.target === sugarOverlay){ sugarOverlay.classList.remove('show'); pendingItem = null; }
-  });
-
-  document.getElementById('cartList').addEventListener('click', function(e){
-    var btn = e.target.closest('button[data-action]');
-    if (!btn) return;
-    var key = btn.dataset.key;
-    if (btn.dataset.action === 'inc'){ cart[key].qty += 1; }
-    if (btn.dataset.action === 'dec'){
-      cart[key].qty -= 1;
-      if (cart[key].qty <= 0) delete cart[key];
+  function tick(){
+    if (video.readyState === video.HAVE_ENOUGH_DATA && scanning){
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var code = jsQR(imageData.data, imageData.width, imageData.height);
+      if (code && code.data && Date.now() - lastScan > 2500){
+        lastScan = Date.now();
+        handleScan(code.data);
+      }
     }
-    renderCart();
-  });
-
-  var cartOverlay = document.getElementById('cartOverlay');
-  document.getElementById('cartPill').addEventListener('click', function(){
-    cartOverlay.classList.add('show');
-  });
-  document.getElementById('cartClose').addEventListener('click', function(){
-    cartOverlay.classList.remove('show');
-  });
-  cartOverlay.addEventListener('click', function(e){
-    if (e.target === cartOverlay) cartOverlay.classList.remove('show');
-  });
-
-  document.getElementById('cartClear').addEventListener('click', function(){
-    cart = {};
-    renderCart();
-  });
-
-  document.getElementById('cartSend').addEventListener('click', function(){
-    var keys = Object.keys(cart);
-    if (keys.length === 0) return;
-    var lines = ['Nouvelle commande — Café Issam'];
-    keys.forEach(function(k){
-      var entry = cart[k];
-      var name = currentLang === 'ar' ? entry.nameAr : entry.nameFr;
-      var sugarTxt = entry.sugar ? ' (' + (currentLang === 'ar' ? entry.sugarAr : entry.sugarFr) + ')' : '';
-      lines.push('- ' + name + sugarTxt + ' x' + entry.qty + ' — ' + (entry.price * entry.qty) + ' DH');
-    });
-    lines.push('Total: ' + cartTotal() + ' DH');
-    var msg = encodeURIComponent(lines.join('\n'));
-    window.open('https://wa.me/212669393531?text=' + msg, '_blank');
-    showToast(strings[currentLang].sent);
-
-    cartOverlay.classList.remove('show');
-    cart = {};
-    renderCart();
-  });
-
-  renderCart();
-
-  /* ---------- carte de fidélité (connectée) ---------- */
-  var LOYALTY_API = 'https://script.google.com/macros/s/AKfycbyfB6aN1siytWR10LXZDbUL983oOcK7OBglFR9b48emZpcyqVPtqTZV1ffiQCQFVY6zJA/exec';
-  var LOYALTY_KEY_SECRET = 'issam-fidelite-2026'; // doit correspondre au SECRET_KEY du script
-  var CLIENT_KEY = 'cafeissam_client'; // { prenom, nom, phone, email }
-  var STAMP_CACHE_KEY = 'cafeissam_stamps_cache';
-
-  function getClient(){
-    try{ return JSON.parse(localStorage.getItem(CLIENT_KEY) || 'null'); }catch(e){ return null; }
+    requestAnimationFrame(tick);
   }
-  function setClient(c){ try{ localStorage.setItem(CLIENT_KEY, JSON.stringify(c)); }catch(e){} }
-  function getStampCache(){ return parseInt(localStorage.getItem(STAMP_CACHE_KEY) || '0', 10) || 0; }
-  function setStampCache(v){ try{ localStorage.setItem(STAMP_CACHE_KEY, String(v)); }catch(e){} }
 
-  function apiConfigured(){ return LOYALTY_API && LOYALTY_API.indexOf('http') === 0; }
+  function handleScan(data){
+    var digits = data.replace(/[^0-9]/g, '');
+    if (digits.length < 9) return; // pas un numéro valide, ignore
+    addStampFor(digits);
+  }
 
-  function apiRegister(client){
-    if (!apiConfigured()) return Promise.resolve({ ok: false, offline: true });
-    return fetch(LOYALTY_API, {
+  function addStampFor(phone){
+    resultBox.className = 'idle';
+    resultBox.innerHTML = 'Ajout en cours…';
+    fetch(LOYALTY_API, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'register', key: LOYALTY_KEY_SECRET, phone: client.phone, email: client.email, nom: client.nom, prenom: client.prenom })
-    }).then(function(r){ return r.json(); }).catch(function(){ return { ok: false, offline: true }; });
-  }
-
-  function apiGetStatus(phone){
-    if (!apiConfigured()) return Promise.resolve({ exists: false, offline: true });
-    return fetch(LOYALTY_API + '?action=getStatus&phone=' + encodeURIComponent(phone))
-      .then(function(r){ return r.json(); })
-      .catch(function(){ return { offline: true }; });
-  }
-
-  function drawStampGrid(stamps, reward){
-    var grid = document.getElementById('stampGrid');
-    grid.innerHTML = '';
-    var shown = reward ? 10 : Math.min(stamps, 9);
-    for (var i = 0; i < 10; i++){
-      var d = document.createElement('div');
-      d.className = 'stamp' + (i < shown ? ' filled' : '');
-      d.textContent = i < shown ? '☕' : '';
-      grid.appendChild(d);
-    }
-    document.getElementById('loyaltyReward').style.display = reward ? 'block' : 'none';
-  }
-
-  function showCardView(client, stamps, reward){
-    document.getElementById('loyaltyForm').style.display = 'none';
-    document.getElementById('loyaltyCardView').style.display = 'block';
-    drawStampGrid(stamps, reward);
-    renderQr(client);
-  }
-
-  function renderQr(client){
-    var qrBox = document.getElementById('loyaltyQr');
-    qrBox.innerHTML = '';
-    var img = document.createElement('img');
-    img.width = 150;
-    img.height = 150;
-    img.alt = 'QR code';
-    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(client.phone);
-    img.onerror = function(){ qrBox.innerHTML = ''; };
-    qrBox.appendChild(img);
-
-    var numBox = document.getElementById('loyaltyPhoneDisplay');
-    numBox.textContent = client.phone;
-  }
-
-  function renderLoyalty(){
-    var client = getClient();
-    if (!client){
-      document.getElementById('loyaltyForm').style.display = 'block';
-      document.getElementById('loyaltyCardView').style.display = 'none';
-      return;
-    }
-    // affiche d'abord la valeur en cache (rapide), puis synchronise
-    showCardView(client, getStampCache(), false);
-    apiGetStatus(client.phone).then(function(res){
-      if (res && !res.offline && typeof res.stamps === 'number'){
-        setStampCache(res.stamps);
-        drawStampGrid(res.stamps, !!res.reward);
+      body: JSON.stringify({ action: 'addStamp', key: LOYALTY_KEY_SECRET, phone: phone, count: 1 })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res && res.ok){
+        var who = (res.prenom ? res.prenom + ' — ' : '') + phone;
+        var badge = res.created ? '🆕 Nouveau client' : '✓ Client existant';
+        if (res.reward){
+          resultBox.className = 'success';
+          resultBox.innerHTML = '<b>🎉 Café offert disponible</b>' + who + '<br>' + res.stamps + ' / 10 tampons';
+          showRedeemButton(phone);
+        } else {
+          resultBox.className = 'success';
+          resultBox.innerHTML = '<b>' + badge + '</b>' + who + '<br>' + res.stamps + ' / 10 tampons';
+          hideRedeemButton();
+        }
+      } else {
+        resultBox.className = 'error';
+        resultBox.innerHTML = '<b>Erreur</b>Réessaie ou vérifie la connexion.';
       }
+    })
+    .catch(function(){
+      resultBox.className = 'error';
+      resultBox.innerHTML = '<b>Hors ligne</b>Vérifie la connexion internet.';
     });
   }
 
-  document.getElementById('loyaltyRegister').addEventListener('click', function(){
-    var btn = this;
-    if (btn.disabled) return; // empêche un double-clic d'envoyer deux inscriptions
-    var prenom = document.getElementById('loyPrenom').value.trim();
-    var nom = document.getElementById('loyNom').value.trim();
-    var phone = document.getElementById('loyPhone').value.trim();
-    var email = document.getElementById('loyEmail').value.trim();
-    var digits = phone.replace(/[^0-9]/g, '');
-    if (!prenom || digits.length < 9){
-      showToast(currentLang === 'ar' ? 'يرجى إدخال الاسم ورقم هاتف صحيح' : 'Merci de renseigner ton prénom et un numéro de téléphone valide');
+  var currentRewardPhone = null;
+  function showRedeemButton(phone){
+    currentRewardPhone = phone;
+    document.getElementById('redeemBtn').style.display = 'block';
+  }
+  function hideRedeemButton(){
+    currentRewardPhone = null;
+    document.getElementById('redeemBtn').style.display = 'none';
+  }
+  document.getElementById('redeemBtn').addEventListener('click', function(){
+    if (!currentRewardPhone) return;
+    fetch(LOYALTY_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'redeemReward', key: LOYALTY_KEY_SECRET, phone: currentRewardPhone })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res && res.ok){
+        resultBox.className = 'success';
+        resultBox.innerHTML = '<b>✓ Café offert remis</b>Carte remise à ' + res.stamps + '/10';
+      }
+      hideRedeemButton();
+    })
+    .catch(function(){
+      resultBox.className = 'error';
+      resultBox.innerHTML = '<b>Hors ligne</b>Vérifie la connexion internet.';
+    });
+  });
+
+  // --- ajout manuel ---
+  document.getElementById('manualBtn').addEventListener('click', function(){
+    var form = document.getElementById('manualForm');
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+  });
+  document.getElementById('manualAdd').addEventListener('click', function(){
+    var phone = document.getElementById('manualPhone').value.replace(/[^0-9]/g, '');
+    if (phone.length < 9){
+      resultBox.className = 'error';
+      resultBox.innerHTML = '<b>Numéro invalide</b>';
       return;
     }
-    btn.disabled = true;
-    var client = { prenom: prenom, nom: nom, phone: digits, email: email };
-    setClient(client);
-    apiRegister(client).then(function(res){
-      var stamps = (res && typeof res.stamps === 'number') ? res.stamps : getStampCache();
-      setStampCache(stamps);
-      showCardView(client, stamps, !!(res && res.reward));
-      btn.disabled = false;
-    }).catch(function(){ btn.disabled = false; });
+    addStampFor(phone);
+    document.getElementById('manualPhone').value = '';
   });
-
-  var loyaltyOverlay = document.getElementById('loyaltyOverlay');
-  document.getElementById('loyaltyBtn').addEventListener('click', function(){
-    renderLoyalty();
-    loyaltyOverlay.classList.add('show');
-  });
-  document.getElementById('loyaltyClose').addEventListener('click', function(){
-    loyaltyOverlay.classList.remove('show');
-  });
-  loyaltyOverlay.addEventListener('click', function(e){
-    if (e.target === loyaltyOverlay) loyaltyOverlay.classList.remove('show');
-  });
-
-  /* ---------- partager le menu ---------- */
-  document.getElementById('shareBtn').addEventListener('click', function(e){
-    e.preventDefault();
-    var url = window.location.href;
-    var shareText = 'Le menu de Café Issam 👇';
-    if (navigator.share){
-      navigator.share({ title: 'Café Issam', text: shareText, url: url }).catch(function(){});
-    } else {
-      window.open('https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + url), '_blank');
-    }
-  });
-
-  /* ---------- statut ouvert / fermé ---------- */
-  var openStrings = {
-    fr: { open: 'Ouvert maintenant', closed: 'Fermé pour le moment' },
-    ar: { open: 'مفتوح الآن', closed: 'مغلق حالياً' }
-  };
-  function updateOpenStatus(){
-    var h = new Date().getHours();
-    var isOpen = h >= 9; // ouvert 9h -> minuit (0h)
-    var dot = document.getElementById('openDot');
-    var text = document.getElementById('openText');
-    dot.classList.toggle('open', isOpen);
-    dot.classList.toggle('closed', !isOpen);
-    text.textContent = isOpen ? openStrings[currentLang].open : openStrings[currentLang].closed;
-  }
-  updateOpenStatus();
-  setInterval(updateOpenStatus, 60000);
-  // ré-applique le bon texte quand la langue change
-  var _setLangOriginal = setLang;
-  setLang = function(lang){ _setLangOriginal(lang); updateOpenStatus(); };
-
-  /* ---------- installer sur l'écran d'accueil ---------- */
-  var deferredPrompt = null;
-  var installBtn = document.getElementById('installBtn');
-  window.addEventListener('beforeinstallprompt', function(e){
-    e.preventDefault();
-    deferredPrompt = e;
-    installBtn.style.display = 'flex';
-  });
-  installBtn.addEventListener('click', function(e){
-    e.preventDefault();
-    if (deferredPrompt){
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function(){ deferredPrompt = null; installBtn.style.display = 'none'; });
-    } else {
-      var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-      var msg = isIOS
-        ? (currentLang === 'ar' ? 'اضغط على زر المشاركة ثم "إضافة إلى الشاشة الرئيسية"' : 'Appuie sur le bouton Partager puis "Sur l\'écran d\'accueil"')
-        : (currentLang === 'ar' ? 'افتح قائمة المتصفح ثم "إضافة إلى الشاشة الرئيسية"' : 'Ouvre le menu du navigateur puis "Ajouter à l\'écran d\'accueil"');
-      showToast(msg);
-    }
-  });
-  window.addEventListener('appinstalled', function(){
-    installBtn.style.display = 'none';
-  });
-  // iOS ne déclenche jamais beforeinstallprompt : on affiche le bouton quand même
-  if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone){
-    installBtn.style.display = 'flex';
-  }
-
-  var observer = new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){
-      if (entry.isIntersecting){
-        entry.target.classList.add('in');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach(function(el, i){
-    el.style.transitionDelay = (i % 3) * 0.06 + 's';
-    observer.observe(el);
-  });
-
-  var heroSlides = document.querySelectorAll('.hero .slide');
-  if (heroSlides.length > 1){
-    var current = 0;
-    setInterval(function(){
-      heroSlides[current].classList.remove('active');
-      current = (current + 1) % heroSlides.length;
-      heroSlides[current].classList.add('active');
-    }, 5000);
-  }
-
-  if ('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
-  }
 </script>
+
 </body>
 </html>
