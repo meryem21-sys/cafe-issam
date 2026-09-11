@@ -1469,6 +1469,12 @@
     if (e.target === loyaltyOverlay) loyaltyOverlay.classList.remove('show');
   });
 
+  // ouverture directe de la carte fidélité via un QR dédié (URL se terminant par #fidelite)
+  if (window.location.hash === '#fidelite'){
+    renderLoyalty();
+    loyaltyOverlay.classList.add('show');
+  }
+
   /* ---------- partager le menu ---------- */
   document.getElementById('shareBtn').addEventListener('click', function(e){
     e.preventDefault();
