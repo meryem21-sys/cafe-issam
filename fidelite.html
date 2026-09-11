@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carte fidélité — Café Issam</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Lora:ital,wght@0,400;0,600;1,500&display=swap');
+
+  :root{
+    --ink: #221408;
+    --cream: #F6EEDF;
+    --paper: #EFE4CE;
+    --saffron: #B9862F;
+    --brick: #7A2E22;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Lora', serif;
+    min-height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 1.2rem;
+  }
+
+  .card{
+    background: var(--cream);
+    border: 4px double var(--ink);
+    padding: 1.8rem 1.5rem;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+  }
+
+  h1{
+    font-family:'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .sub{
+    font-size: 0.85rem;
+    color: var(--brick);
+    margin-bottom: 1.4rem;
+  }
+
+  .loy-input{
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    margin-bottom: 0.65rem;
+    border: 1px solid var(--ink);
+    background: transparent;
+    font-family: 'Lora', serif;
+    font-size: 0.92rem;
+    color: var(--ink);
+    border-radius: 3px;
+  }
+  .loy-input::placeholder{ color: rgba(34,20,8,0.5); }
+
+  .btn{
+    width:100%;
+    font-family:'Lora', serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .loyalty-qr{ display:flex; justify-content:center; margin-bottom: 0.8rem; }
+  .loyalty-qr img{
+    width: 170px; height: 170px;
+    border: 6px solid #fff;
+    box-shadow: 0 2px 10px rgba(34,20,8,0.2);
+  }
+
+  .phone-display{
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  .hint{ font-size: 0.78rem; color: var(--brick); margin-bottom: 1.1rem; }
+
+  .stamp-grid{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+  .stamp{
+    aspect-ratio: 1;
+    border: 1.5px dashed var(--ink);
+    border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 1.1rem;
+  }
+  .stamp.filled{ border-style: solid; background: var(--saffron); }
+
+  .reward{
+    background: rgba(185,134,47,0.15);
+    border: 1.5px solid var(--saffron);
+    padding: 0.8rem;
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    display:none;
+  }
+
+  .menu-link{
+    display:block;
+    margin-top: 1.2rem;
+    font-size: 0.8rem;
+    color: var(--brick);
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Carte fidélité</h1>
+  <div class="sub">Le 10ème café est offert</div>
+
+  <div id="loyaltyForm">
+    <input type="text" id="loyPrenom" class="loy-input" placeholder="Prénom">
+    <input type="text" id="loyNom" class="loy-input" placeholder="Nom">
+    <input type="tel" id="loyPhone" class="loy-input" placeholder="Numéro de téléphone">
+    <input type="email" id="loyEmail" class="loy-input" placeholder="Email (optionnel)">
+    <button class="btn" id="loyaltyRegister">Créer ma carte</button>
+  </div>
+
+  <div id="loyaltyCardView" style="display:none;">
+    <div id="loyaltyQr" class="loyalty-qr"></div>
+    <div class="phone-display" id="loyaltyPhoneDisplay"></div>
+    <div class="hint">Montre ce code au comptoir à chaque café</div>
+    <div class="stamp-grid" id="stampGrid"></div>
+    <div class="reward" id="loyaltyReward">🎉 Café offert ! Montre cet écran au comptoir</div>
+  </div>
+
+  <a class="menu-link" href="./">Voir le menu du café</a>
+</div>
+
+<script>
+  var LOYALTY_API = 'https://script.google.com/macros/s/AKfycbyfB6aN1siytWR10LXZDbUL983oOcK7OBglFR9b48emZpcyqVPtqTZV1ffiQCQFVY6zJA/exec';
+  var CLIENT_KEY = 'cafeissam_client';
+  var STAMP_CACHE_KEY = 'cafeissam_stamps_cache';
+
+  function getClient(){ try{ return JSON.parse(localStorage.getItem(CLIENT_KEY) || 'null'); }catch(e){ return null; } }
+  function setClient(c){ try{ localStorage.setItem(CLIENT_KEY, JSON.stringify(c)); }catch(e){} }
+  function getStampCache(){ return parseInt(localStorage.getItem(STAMP_CACHE_KEY) || '0', 10) || 0; }
+  function setStampCache(v){ try{ localStorage.setItem(STAMP_CACHE_KEY, String(v)); }catch(e){} }
+
+  function apiRegister(client){
+    return fetch(LOYALTY_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'register', key: 'issam-fidelite-2026', phone: client.phone, email: client.email, nom: client.nom, prenom: client.prenom })
+    }).then(function(r){ return r.json(); }).catch(function(){ return { ok: false, offline: true }; });
+  }
+
+  function apiGetStatus(phone){
+    return fetch(LOYALTY_API + '?action=getStatus&phone=' + encodeURIComponent(phone))
+      .then(function(r){ return r.json(); }).catch(function(){ return { offline: true }; });
+  }
+
+  function drawStampGrid(stamps, reward){
+    var grid = document.getElementById('stampGrid');
+    grid.innerHTML = '';
+    var shown = reward ? 10 : Math.min(stamps, 9);
+    for (var i = 0; i < 10; i++){
+      var d = document.createElement('div');
+      d.className = 'stamp' + (i < shown ? ' filled' : '');
+      d.textContent = i < shown ? '☕' : '';
+      grid.appendChild(d);
+    }
+    document.getElementById('loyaltyReward').style.display = reward ? 'block' : 'none';
+  }
+
+  function renderQr(client){
+    var qrBox = document.getElementById('loyaltyQr');
+    qrBox.innerHTML = '';
+    var img = document.createElement('img');
+    img.width = 170; img.height = 170; img.alt = 'QR code';
+    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=' + encodeURIComponent(client.phone);
+    qrBox.appendChild(img);
+    document.getElementById('loyaltyPhoneDisplay').textContent = client.phone;
+  }
+
+  function showCardView(client, stamps, reward){
+    document.getElementById('loyaltyForm').style.display = 'none';
+    document.getElementById('loyaltyCardView').style.display = 'block';
+    drawStampGrid(stamps, reward);
+    renderQr(client);
+  }
+
+  function renderLoyalty(){
+    var client = getClient();
+    if (!client) return; // le formulaire reste affiché par défaut
+    showCardView(client, getStampCache(), false);
+    apiGetStatus(client.phone).then(function(res){
+      if (res && !res.offline && typeof res.stamps === 'number'){
+        setStampCache(res.stamps);
+        drawStampGrid(res.stamps, !!res.reward);
+      }
+    });
+  }
+
+  document.getElementById('loyaltyRegister').addEventListener('click', function(){
+    var btn = this;
+    if (btn.disabled) return;
+    var prenom = document.getElementById('loyPrenom').value.trim();
+    var nom = document.getElementById('loyNom').value.trim();
+    var phone = document.getElementById('loyPhone').value.trim();
+    var email = document.getElementById('loyEmail').value.trim();
+    var digits = phone.replace(/[^0-9]/g, '');
+    if (!prenom || digits.length < 9){
+      alert('Merci de renseigner ton prénom et un numéro de téléphone valide');
+      return;
+    }
+    btn.disabled = true;
+    var client = { prenom: prenom, nom: nom, phone: digits, email: email };
+    setClient(client);
+    apiRegister(client).then(function(res){
+      var stamps = (res && typeof res.stamps === 'number') ? res.stamps : getStampCache();
+      setStampCache(stamps);
+      showCardView(client, stamps, !!(res && res.reward));
+      btn.disabled = false;
+    }).catch(function(){ btn.disabled = false; });
+  });
+
+  renderLoyalty();
+</script>
+
+</body>
+</html>
